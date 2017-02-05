@@ -61,12 +61,14 @@ namespace MyGraph
         public bool IsEdgeStart => false;
     }
     */
-    class Graph : PropertyChangedBase, IGraph
+
+    public class Graph : PropertyChangedBase, IGraph
     {
-        private INode _virtualNode;
+        private Node _virtualNode;
         public ObservableCollection<INode> Nodes { get; }
 
-        public INode VirtualNode
+        INode IGraph.VirtualNode { get { return VirtualNode; } set { VirtualNode = (Node)value; } }
+        public Node VirtualNode
         {
             get { return _virtualNode; }
             set
@@ -74,8 +76,12 @@ namespace MyGraph
                 if (Equals(value, _virtualNode)) return;
                 _virtualNode = value;
                 NotifyOfPropertyChange(nameof(VirtualNode));
+                NotifyOfPropertyChange(nameof(VirtualNodeLocationEditor));
             }
         }
+
+        public PointEditorViewModel VirtualNodeLocationEditor =>
+            VirtualNode == null ? null : new PointEditorViewModel(VirtualNode, nameof(Node.Location));
 
         public void AddNodeFailed()
         {
@@ -92,7 +98,7 @@ namespace MyGraph
             NotifyOfPropertyChange(nameof(VirtualNode));
             Nodes.Add(newNode);
         }
-        public Graph(ObservableCollection<INode> nodes, INode virtualNode, ObservableCollection<IEdge> edges)
+        public Graph(ObservableCollection<INode> nodes, Node virtualNode, ObservableCollection<IEdge> edges)
         {
             Nodes = nodes;
             VirtualNode = virtualNode;
@@ -100,6 +106,8 @@ namespace MyGraph
         }
 
         public ObservableCollection<IEdge> Edges { get; }
+
+
         public IEdge CreateVirtualEdge(INode a, INode b)
         {
             return new Edge(a, b);

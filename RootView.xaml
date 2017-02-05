@@ -13,7 +13,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel>
-            <myGraph:PointEditorView DataContext="{Binding Graph.VirtualNode.LocationEditor}"/>
+            <myGraph:PointEditorView DataContext="{Binding Graph.VirtualNodeLocationEditor}"/>
         </StackPanel>
         <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="1">
             <myGraph:GraphControl Graph="{Binding Graph}" >
@@ -26,7 +26,7 @@
                                     <MenuItem Header="Start Edge" cal:Message.Attach="StartEdge"/>
                                 </ContextMenu>
                             </Ellipse.ContextMenu>
-                            
+
                         </Ellipse>
                     </DataTemplate>
                 </myGraph:GraphControl.NodeTemplate>
@@ -39,21 +39,19 @@
                                     <MenuItem Header="Line!" cal:Message.Attach="StartEdge"/>
                                 </ContextMenu>
                             </Line.ContextMenu>
-                            
+
                         </Line>
                     </DataTemplate>
                 </myGraph:GraphControl.EdgeTemplate>
                 <myGraph:GraphControl.VirtualEdgeTemplate>
                     <DataTemplate>
                         <Line Fill="GreenYellow" Width="10" Height="10"
-                                 Stroke="Green" StrokeThickness="1"
-                                 cal:Message.Attach="[Event MouseDown] = [Action EdgeReady]">
+                                 Stroke="Green" StrokeThickness="1">
                             <Line.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Line!" cal:Message.Attach="StartEdge"/>
                                 </ContextMenu>
                             </Line.ContextMenu>
-                            
                         </Line>
                     </DataTemplate>
                 </myGraph:GraphControl.VirtualEdgeTemplate>

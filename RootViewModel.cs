@@ -9,7 +9,7 @@ namespace MyGraph
 {
     public class RootViewModel : PropertyChangedBase, IShell
     {
-        public IGraph Graph { get; }
+        public Graph Graph { get; }
 
         public RootViewModel()
         {

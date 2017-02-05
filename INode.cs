@@ -10,7 +10,7 @@ namespace MyGraph
         bool IsEdgeStart { get; }
     }
 
-    class Node : PropertyChangedBase, INode
+    public class Node : PropertyChangedBase, INode
     {
         private Point _location;
         

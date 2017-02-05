@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -189,7 +188,6 @@ namespace MyGraph
             MoveEdge(edge, edgeControl);
             _canvas.Children.Add(edgeControl);
             _edges[edge] = edgeControl;
-            edge.PropertyChanged += OnEdgePropertyChanged;
         }
 
         private static void MoveEdge(IEdge edge, Line edgeControl)
@@ -253,15 +251,5 @@ namespace MyGraph
                     MoveEdge(edge, (Line)_edges[edge]);
         }
 
-
-        private void OnEdgePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            /*   var edge = (IEdge)sender;
-               var element = _edges[edge];
-               switch (e.PropertyName)
-               {
-                   //???
-               }*/
-        }
     }
 }
