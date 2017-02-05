@@ -85,14 +85,18 @@ namespace MyGraph
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton != MouseButton.Right) return;
-            if (!MapControl(e.OriginalSource)) return;
-            var position = e.GetPosition(this);
-            if (Graph.VirtualNode == null)
-                AddVirtualNode(position);
-            else
-                Graph.VirtualNode.Location = position;
-            e.Handled = false;
+            if (e.ChangedButton == MouseButton.Right)
+                if (MapControl(e.OriginalSource))
+                {
+                    var position = e.GetPosition(this);
+                    if (Graph.VirtualNode == null)
+                        AddVirtualNode(position);
+                    else
+                        Graph.VirtualNode.Location = position;
+                    e.Handled = false;
+                }
+
+            _virtualEdge = null;
         }
 
         private bool MapControl(object obj)
@@ -246,7 +250,7 @@ namespace MyGraph
         {
             foreach (var edge in _edges.Keys)
                 if (edge.A == node || edge.B == node)
-                    MoveEdge(edge, (Line) _edges[edge]);
+                    MoveEdge(edge, (Line)_edges[edge]);
         }
 
 

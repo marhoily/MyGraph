@@ -46,7 +46,8 @@
                 <myGraph:GraphControl.VirtualEdgeTemplate>
                     <DataTemplate>
                         <Line Fill="GreenYellow" Width="10" Height="10"
-                                 Stroke="Green" StrokeThickness="1">
+                                 Stroke="Green" StrokeThickness="1"
+                                 cal:Message.Attach="[Event MouseDown] = [Action EdgeReady]">
                             <Line.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Line!" cal:Message.Attach="StartEdge"/>
