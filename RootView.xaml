@@ -23,14 +23,26 @@
                                  Stroke="Brown" StrokeThickness="1">
                             <Ellipse.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Start Edge" 
-                                              cal:Message.Attach="StartEdge"/>
+                                    <MenuItem Header="Start Edge" cal:Message.Attach="StartEdge"/>
                                 </ContextMenu>
                             </Ellipse.ContextMenu>
                             
                         </Ellipse>
                     </DataTemplate>
                 </myGraph:GraphControl.NodeTemplate>
+                <myGraph:GraphControl.EdgeTemplate>
+                    <DataTemplate>
+                        <Line Fill="Chocolate" Width="10" Height="10"
+                                 Stroke="Brown" StrokeThickness="1">
+                            <Line.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Line!" cal:Message.Attach="StartEdge"/>
+                                </ContextMenu>
+                            </Line.ContextMenu>
+                            
+                        </Line>
+                    </DataTemplate>
+                </myGraph:GraphControl.EdgeTemplate>
                 <myGraph:GraphControl.VirtualNodeTemplate>
                     <DataTemplate>
                         <Ellipse Fill="GreenYellow" Width="10" Height="10"

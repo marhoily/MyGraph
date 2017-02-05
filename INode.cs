@@ -12,11 +12,25 @@ namespace MyGraph
     class Node : PropertyChangedBase, INode
     {
         private Point _location;
-
+        /*
         public void StartEdge()
         {
-            
+            IsEdgeStart = true;
         }
+
+        public bool IsEdgeStart
+        {
+            get { return _isEdgeStart; }
+            set
+            {
+                if (value == _isEdgeStart) return;
+                _isEdgeStart = value;
+                NotifyOfPropertyChange(nameof(IsEdgeStart));
+            }
+        }
+        private bool _isEdgeStart;
+        */
+
         public Point Location
         {
             get { return _location; }

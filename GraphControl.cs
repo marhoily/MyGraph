@@ -7,25 +7,62 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
+using Caliburn.Micro;
 using JetBrains.Annotations;
 
 namespace MyGraph
 {
     public sealed class GraphControl : UserControl
     {
-        public static readonly DependencyProperty GraphProperty = DependencyProperty.Register("Graph", typeof(IGraph), typeof(GraphControl), new PropertyMetadata(default(IGraph), OnGraphChanged));
-        public static readonly DependencyProperty NodeTemplateProperty = DependencyProperty.Register("NodeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
-        public static readonly DependencyProperty VirtualNodeTemplateProperty = DependencyProperty.Register("VirtualNodeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+        public static readonly DependencyProperty GraphProperty = DependencyProperty.Register("Graph", typeof(IGraph),
+            typeof(GraphControl), new PropertyMetadata(default(IGraph), OnGraphChanged));
+
+        public static readonly DependencyProperty NodeTemplateProperty = DependencyProperty.Register("NodeTemplate",
+            typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+
+        public static readonly DependencyProperty VirtualNodeTemplateProperty =
+            DependencyProperty.Register("VirtualNodeTemplate", typeof(DataTemplate), typeof(GraphControl),
+                new PropertyMetadata(default(DataTemplate)));
+
+        public static readonly DependencyProperty EdgeTemplateProperty = DependencyProperty.Register(
+            "EdgeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
 
         private readonly Canvas _canvas;
-        private INode _virtualNode;
         private readonly Dictionary<INode, FrameworkElement> _nodes = new Dictionary<INode, FrameworkElement>();
+        private readonly Dictionary<IEdge, FrameworkElement> _edges = new Dictionary<IEdge, FrameworkElement>();
+        private INode _virtualNode;
 
         public GraphControl()
         {
             Content = _canvas = new Canvas();
             MouseUp += OnMouseUp;
             Background = Brushes.Transparent;
+        }
+
+
+        public IGraph Graph
+        {
+            get { return (IGraph) GetValue(GraphProperty); }
+            set { SetValue(GraphProperty, value); }
+        }
+
+        public DataTemplate NodeTemplate
+        {
+            get { return (DataTemplate) GetValue(NodeTemplateProperty); }
+            set { SetValue(NodeTemplateProperty, value); }
+        }
+
+        public DataTemplate VirtualNodeTemplate
+        {
+            get { return (DataTemplate) GetValue(VirtualNodeTemplateProperty); }
+            set { SetValue(VirtualNodeTemplateProperty, value); }
+        }
+
+        public DataTemplate EdgeTemplate
+        {
+            get { return (DataTemplate) GetValue(EdgeTemplateProperty); }
+            set { SetValue(EdgeTemplateProperty, value); }
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -46,28 +83,11 @@ namespace MyGraph
             return e != null && e.DataContext == DataContext;
         }
 
-
-        public IGraph Graph
-        {
-            get { return (IGraph)GetValue(GraphProperty); }
-            set { SetValue(GraphProperty, value); }
-        }
-
-        public DataTemplate NodeTemplate
-        {
-            get { return (DataTemplate)GetValue(NodeTemplateProperty); }
-            set { SetValue(NodeTemplateProperty, value); }
-        }
-        public DataTemplate VirtualNodeTemplate
-        {
-            get { return (DataTemplate)GetValue(VirtualNodeTemplateProperty); }
-            set { SetValue(VirtualNodeTemplateProperty, value); }
-        }
-
         private static void OnGraphChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((GraphControl)d).OnGraphChanged();
+            ((GraphControl) d).OnGraphChanged();
         }
+
         private void OnGraphChanged()
         {
             Graph.Nodes.CollectionChanged += NodesOnCollectionChanged;
@@ -76,9 +96,13 @@ namespace MyGraph
             foreach (var node in Graph.Nodes)
                 Add(node, NodeTemplate);
 
+            foreach (var edge in Graph.Edges)
+                Add(edge, EdgeTemplate);
+
             if (Graph.VirtualNode != null)
                 DrawVirtualNode();
         }
+
 
         private void NodesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -86,11 +110,11 @@ namespace MyGraph
             {
                 case NotifyCollectionChangedAction.Add:
                     foreach (var node in e.NewItems)
-                        Add((INode)node, NodeTemplate);
+                        Add((INode) node, NodeTemplate);
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var node in e.NewItems)
-                        Remove((INode)node);
+                        Remove((INode) node);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -123,25 +147,37 @@ namespace MyGraph
             Graph.VirtualNode = new VirtualNode(location);
         }
 
-        private void Add([NotNull]INode node, DataTemplate template)
+        private void Add([NotNull] INode node, [NotNull] DataTemplate template)
         {
-            var nodeControl = (FrameworkElement)template.LoadContent();
-            Caliburn.Micro.Bind.SetModel(nodeControl, node);
+            var nodeControl = (FrameworkElement) template.LoadContent();
+            Bind.SetModel(nodeControl, node);
             MoveWhenResized(nodeControl, node.Location);
-            Move(nodeControl, node.Location);
+//            Move(nodeControl, node.Location);
             _canvas.Children.Add(nodeControl);
             _nodes[node] = nodeControl;
             node.PropertyChanged += OnNodePropertyChanged;
         }
 
+        private void Add([NotNull] IEdge edge, [NotNull] DataTemplate template)
+        {
+            var edgeControl = (Line)template.LoadContent();
+            Bind.SetModel(edgeControl, edge);
+            edgeControl.Width = ActualWidth;
+            edgeControl.Height = ActualHeight;
+            Panel.SetZIndex(edgeControl, -1);
+            edgeControl.X1 = edge.A.Location.X;
+            edgeControl.Y1 = edge.A.Location.Y;
+            edgeControl.X2 = edge.B.Location.X;
+            edgeControl.Y2 = edge.B.Location.Y;
+            _canvas.Children.Add(edgeControl);
+            _edges[edge] = edgeControl;
+
+        }
         private static void MoveWhenResized(FrameworkElement nodeControl, Point nodeLocation)
         {
-            SizeChangedEventHandler resized = (s, e) =>
-            {
-                Move(nodeControl, nodeLocation);
-            };
+            SizeChangedEventHandler resized = (s, e) => { Move(nodeControl, nodeLocation); };
             nodeControl.SizeChanged += resized;
-            RoutedEventHandler[] unloaded = { null };
+            RoutedEventHandler[] unloaded = {null};
             unloaded[0] = (s, e) =>
             {
                 nodeControl.SizeChanged -= resized;
@@ -149,7 +185,6 @@ namespace MyGraph
             };
             nodeControl.Unloaded += unloaded[0];
         }
-
 
         private void Remove(INode n)
         {
@@ -162,19 +197,11 @@ namespace MyGraph
         {
             Canvas.SetTop(nodeControl, location.Y - nodeControl.ActualHeight / 2);
             Canvas.SetLeft(nodeControl, location.X - nodeControl.ActualWidth / 2);
-
         }
 
-       // protected override Size ArrangeOverride(Size arrangeBounds)
-       // {
-       //     foreach (var p in _nodes)
-       //         Move(p.Value, p.Key.Location);
-       //     return base.ArrangeOverride(arrangeBounds);
-       // }
-       //
         private void OnNodePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var node = (INode)sender;
+            var node = (INode) sender;
             var element = _nodes[node];
             Move(element, node.Location);
         }

@@ -8,8 +8,28 @@ namespace MyGraph
 {
     public interface IGraph : INotifyPropertyChanged
     {
+        ObservableCollection<IEdge> Edges { get; }
+
         ObservableCollection<INode> Nodes { get; }
         VirtualNode VirtualNode { get; set; }
+    }
+
+    public interface IEdge
+    {
+        INode A { get; }
+        INode B { get; }
+    }
+
+    class Edge : IEdge
+    {
+        public INode A { get; }
+        public INode B { get; }
+
+        public Edge(INode a, INode b)
+        {
+            A = a;
+            B = b;
+        }
     }
 
     public class VirtualNode : PropertyChangedBase, INode
@@ -69,10 +89,13 @@ namespace MyGraph
             NotifyOfPropertyChange(nameof(VirtualNode));
             Nodes.Add(newNode);
         }
-        public Graph(ObservableCollection<INode> nodes, VirtualNode virtualNode)
+        public Graph(ObservableCollection<INode> nodes, VirtualNode virtualNode, ObservableCollection<IEdge> edges)
         {
             Nodes = nodes;
             VirtualNode = virtualNode;
+            Edges = edges;
         }
+
+        public ObservableCollection<IEdge> Edges { get; }
     }
 }

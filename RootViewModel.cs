@@ -13,12 +13,12 @@ namespace MyGraph
 
         public RootViewModel()
         {
-            Graph = new Graph(new ObservableCollection<INode>
-            {
-                new Node(new Point(100, 100)),
-                new Node(new Point(200, 200)),
-            },
-            new VirtualNode(new Point(300, 300)));
+            var a = new Node(new Point(100, 100));
+            var b = new Node(new Point(200, 200));
+            Graph = new Graph(
+                new ObservableCollection<INode>{a,b,},
+                new VirtualNode(new Point(300, 300)),
+                new ObservableCollection<IEdge> {new Edge(a, b)});
         }
     }
 
