@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -48,31 +49,31 @@ namespace MyGraph
 
         public IGraph Graph
         {
-            get { return (IGraph) GetValue(GraphProperty); }
+            get { return (IGraph)GetValue(GraphProperty); }
             set { SetValue(GraphProperty, value); }
         }
 
         public DataTemplate NodeTemplate
         {
-            get { return (DataTemplate) GetValue(NodeTemplateProperty); }
+            get { return (DataTemplate)GetValue(NodeTemplateProperty); }
             set { SetValue(NodeTemplateProperty, value); }
         }
 
         public DataTemplate VirtualNodeTemplate
         {
-            get { return (DataTemplate) GetValue(VirtualNodeTemplateProperty); }
+            get { return (DataTemplate)GetValue(VirtualNodeTemplateProperty); }
             set { SetValue(VirtualNodeTemplateProperty, value); }
         }
 
         public DataTemplate EdgeTemplate
         {
-            get { return (DataTemplate) GetValue(EdgeTemplateProperty); }
+            get { return (DataTemplate)GetValue(EdgeTemplateProperty); }
             set { SetValue(EdgeTemplateProperty, value); }
         }
 
         public DataTemplate VirtualEdgeTemplate
         {
-            get { return (DataTemplate) GetValue(VirtualEdgeTemplateProperty); }
+            get { return (DataTemplate)GetValue(VirtualEdgeTemplateProperty); }
             set { SetValue(VirtualEdgeTemplateProperty, value); }
         }
 
@@ -102,7 +103,7 @@ namespace MyGraph
 
         private static void OnGraphChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((GraphControl) d).OnGraphChanged();
+            ((GraphControl)d).OnGraphChanged();
         }
 
         private void OnGraphChanged()
@@ -127,11 +128,11 @@ namespace MyGraph
             {
                 case NotifyCollectionChangedAction.Add:
                     foreach (var node in e.NewItems)
-                        Add((INode) node, NodeTemplate);
+                        Add((INode)node, NodeTemplate);
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (var node in e.NewItems)
-                        Remove((INode) node);
+                        Remove((INode)node);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -166,7 +167,7 @@ namespace MyGraph
 
         private void Add([NotNull] INode node, [NotNull] DataTemplate template)
         {
-            var nodeControl = (FrameworkElement) template.LoadContent();
+            var nodeControl = (FrameworkElement)template.LoadContent();
             Bind.SetModel(nodeControl, node);
             MoveWhenResized(nodeControl, node.Location);
             _canvas.Children.Add(nodeControl);
@@ -176,24 +177,31 @@ namespace MyGraph
 
         private void Add([NotNull] IEdge edge, [NotNull] DataTemplate template)
         {
-            var edgeControl = (Line) template.LoadContent();
+            var edgeControl = (Line)template.LoadContent();
             Bind.SetModel(edgeControl, edge);
             edgeControl.Width = ActualWidth;
             edgeControl.Height = ActualHeight;
             Panel.SetZIndex(edgeControl, value: -1);
+            MoveEdge(edge, edgeControl);
+            _canvas.Children.Add(edgeControl);
+            _edges[edge] = edgeControl;
+            edge.PropertyChanged += OnEdgePropertyChanged;
+        }
+
+        private static void MoveEdge(IEdge edge, Line edgeControl)
+        {
             edgeControl.X1 = edge.A.Location.X;
             edgeControl.Y1 = edge.A.Location.Y;
             edgeControl.X2 = edge.B.Location.X;
             edgeControl.Y2 = edge.B.Location.Y;
-            _canvas.Children.Add(edgeControl);
-            _edges[edge] = edgeControl;
         }
+
 
         private static void MoveWhenResized(FrameworkElement nodeControl, Point nodeLocation)
         {
             SizeChangedEventHandler resized = (s, e) => { Move(nodeControl, nodeLocation); };
             nodeControl.SizeChanged += resized;
-            RoutedEventHandler[] unloaded = {null};
+            RoutedEventHandler[] unloaded = { null };
             unloaded[0] = (s, e) =>
             {
                 nodeControl.SizeChanged -= resized;
@@ -217,19 +225,39 @@ namespace MyGraph
 
         private void OnNodePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var node = (INode) sender;
+            var node = (INode)sender;
             var element = _nodes[node];
             switch (e.PropertyName)
             {
                 case nameof(INode.Location):
                     Move(element, node.Location);
+                    MoveEdges(node);
                     break;
                 case nameof(INode.IsEdgeStart):
-                    _virtualEdge = Graph.CreateVirtualEdge(node,
-                        Graph.CreateVirtualNode(Mouse.GetPosition(this)));
+                    var virtualNode = Graph.CreateVirtualNode(Mouse.GetPosition(this));
+                    Add(virtualNode, VirtualNodeTemplate);
+                    _virtualEdge = Graph.CreateVirtualEdge(node, virtualNode);
                     Add(_virtualEdge, VirtualEdgeTemplate);
                     break;
             }
+        }
+
+        private void MoveEdges(INode node)
+        {
+            foreach (var edge in _edges.Keys)
+                if (edge.A == node || edge.B == node)
+                    MoveEdge(edge, (Line) _edges[edge]);
+        }
+
+
+        private void OnEdgePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            /*   var edge = (IEdge)sender;
+               var element = _edges[edge];
+               switch (e.PropertyName)
+               {
+                   //???
+               }*/
         }
     }
 }

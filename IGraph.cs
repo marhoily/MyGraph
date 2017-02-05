@@ -16,13 +16,13 @@ namespace MyGraph
         INode CreateVirtualNode(Point location);
     }
 
-    public interface IEdge
+    public interface IEdge : INotifyPropertyChanged
     {
         INode A { get; }
         INode B { get; }
     }
 
-    class Edge : IEdge
+    class Edge : PropertyChangedBase, IEdge
     {
         public INode A { get; }
         public INode B { get; }
