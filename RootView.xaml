@@ -10,6 +10,9 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <StackPanel>
+            <myGraph:PointEditorView DataContext="{Binding Graph.VirtualNode.LocationEditor}"/>
+        </StackPanel>
         <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="1">
             <myGraph:GraphControl Graph="{Binding Graph}" >
                 <myGraph:GraphControl.NodeTemplate>
