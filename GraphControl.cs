@@ -31,12 +31,19 @@ namespace MyGraph
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton != MouseButton.Right) return;
+            if (!MapControl(e.OriginalSource)) return;
             var position = e.GetPosition(this);
             if (Graph.VirtualNode == null)
                 AddVirtualNode(position);
             else
                 Graph.VirtualNode.Location = position;
             e.Handled = false;
+        }
+
+        private bool MapControl(object obj)
+        {
+            var e = obj as FrameworkElement;
+            return e != null && e.DataContext == DataContext;
         }
 
 
@@ -104,8 +111,6 @@ namespace MyGraph
             }
         }
 
-
-
         private void DrawVirtualNode()
         {
             Debug.Assert(Graph.VirtualNode != null);
@@ -121,6 +126,7 @@ namespace MyGraph
         private void Add([NotNull]INode node, DataTemplate template)
         {
             var nodeControl = (FrameworkElement)template.LoadContent();
+            Caliburn.Micro.Bind.SetModel(nodeControl, node);
             MoveWhenResized(nodeControl, node.Location);
             Move(nodeControl, node.Location);
             _canvas.Children.Add(nodeControl);

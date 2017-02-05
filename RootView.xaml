@@ -20,7 +20,15 @@
                 <myGraph:GraphControl.NodeTemplate>
                     <DataTemplate>
                         <Ellipse Fill="Chocolate" Width="10" Height="10"
-                                 Stroke="Brown" StrokeThickness="1"/>
+                                 Stroke="Brown" StrokeThickness="1">
+                            <Ellipse.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Start Edge" 
+                                              cal:Message.Attach="StartEdge"/>
+                                </ContextMenu>
+                            </Ellipse.ContextMenu>
+                            
+                        </Ellipse>
                     </DataTemplate>
                 </myGraph:GraphControl.NodeTemplate>
                 <myGraph:GraphControl.VirtualNodeTemplate>
@@ -31,12 +39,9 @@
                 </myGraph:GraphControl.VirtualNodeTemplate>
                 <myGraph:GraphControl.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Add node"
-                                  cal:Bind.Model="{Binding Graph}"
-                                  cal:Message.Attach="AddNode"/>
-                        <MenuItem Header="Validation failed"
-                                  cal:Bind.Model="{Binding Graph}"
-                                  cal:Message.Attach="AddNodeFailed"/>
+                        <!-- TODO: remove cal:Bind.Model= -->
+                        <MenuItem Header="Add node" cal:Bind.Model="{Binding Graph}" cal:Message.Attach="AddNode"/>
+                        <MenuItem Header="Validation failed" cal:Bind.Model="{Binding Graph}" cal:Message.Attach="AddNodeFailed"/>
                     </ContextMenu>
                 </myGraph:GraphControl.ContextMenu>
             </myGraph:GraphControl>

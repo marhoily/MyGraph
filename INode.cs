@@ -13,6 +13,10 @@ namespace MyGraph
     {
         private Point _location;
 
+        public void StartEdge()
+        {
+            
+        }
         public Point Location
         {
             get { return _location; }
