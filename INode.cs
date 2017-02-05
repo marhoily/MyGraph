@@ -6,13 +6,14 @@ namespace MyGraph
 {
     public interface INode : INotifyPropertyChanged
     {
-        Point Location { get; }
+        Point Location { get; set; }
+        bool IsEdgeStart { get; }
     }
 
     class Node : PropertyChangedBase, INode
     {
         private Point _location;
-        /*
+        
         public void StartEdge()
         {
             IsEdgeStart = true;
@@ -29,7 +30,7 @@ namespace MyGraph
             }
         }
         private bool _isEdgeStart;
-        */
+        
 
         public Point Location
         {

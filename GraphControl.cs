@@ -32,14 +32,21 @@ namespace MyGraph
         private readonly Dictionary<INode, FrameworkElement> _nodes = new Dictionary<INode, FrameworkElement>();
         private readonly Dictionary<IEdge, FrameworkElement> _edges = new Dictionary<IEdge, FrameworkElement>();
         private INode _virtualNode;
+        private IEdge _virtualEdge;
 
         public GraphControl()
         {
             Content = _canvas = new Canvas();
             MouseUp += OnMouseUp;
+            MouseMove += OnMouseMove;
             Background = Brushes.Transparent;
         }
 
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_virtualEdge == null) return;
+            
+        }
 
         public IGraph Graph
         {
@@ -144,7 +151,7 @@ namespace MyGraph
 
         private void AddVirtualNode(Point location)
         {
-            Graph.VirtualNode = new VirtualNode(location);
+            Graph.VirtualNode = new Node(location);
         }
 
         private void Add([NotNull] INode node, [NotNull] DataTemplate template)
@@ -152,7 +159,6 @@ namespace MyGraph
             var nodeControl = (FrameworkElement) template.LoadContent();
             Bind.SetModel(nodeControl, node);
             MoveWhenResized(nodeControl, node.Location);
-//            Move(nodeControl, node.Location);
             _canvas.Children.Add(nodeControl);
             _nodes[node] = nodeControl;
             node.PropertyChanged += OnNodePropertyChanged;
@@ -203,7 +209,17 @@ namespace MyGraph
         {
             var node = (INode) sender;
             var element = _nodes[node];
-            Move(element, node.Location);
+            switch (e.PropertyName)
+            {
+                case nameof(INode.Location):
+                    Move(element, node.Location);
+                    break;
+                case nameof(INode.IsEdgeStart):
+
+                    _virtualEdge = Graph.CreateVirtualEdge(node,
+                        Graph.CreateVirtualNode(Mouse.GetPosition(this)));
+                    break;
+            }
         }
     }
 }

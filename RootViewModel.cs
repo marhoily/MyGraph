@@ -17,7 +17,7 @@ namespace MyGraph
             var b = new Node(new Point(200, 200));
             Graph = new Graph(
                 new ObservableCollection<INode>{a,b,},
-                new VirtualNode(new Point(300, 300)),
+                new Node(new Point(300, 300)),
                 new ObservableCollection<IEdge> {new Edge(a, b)});
         }
     }

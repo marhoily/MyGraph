@@ -9,9 +9,11 @@ namespace MyGraph
     public interface IGraph : INotifyPropertyChanged
     {
         ObservableCollection<IEdge> Edges { get; }
+        IEdge CreateVirtualEdge(INode a, INode b);
 
         ObservableCollection<INode> Nodes { get; }
-        VirtualNode VirtualNode { get; set; }
+        INode VirtualNode { get; set; }
+        INode CreateVirtualNode(Point location);
     }
 
     public interface IEdge
@@ -32,7 +34,7 @@ namespace MyGraph
         }
     }
 
-    public class VirtualNode : PropertyChangedBase, INode
+   /* public class VirtualNode : PropertyChangedBase, INode
     {
         private Point _location;
         public PointEditorViewModel LocationEditor { get; }
@@ -56,14 +58,15 @@ namespace MyGraph
         private static int _counter;
         private readonly int _id;
         public override string ToString() => $"VirtualNode({_id})";
+        public bool IsEdgeStart => false;
     }
-
+    */
     class Graph : PropertyChangedBase, IGraph
     {
-        private VirtualNode _virtualNode;
+        private INode _virtualNode;
         public ObservableCollection<INode> Nodes { get; }
 
-        public VirtualNode VirtualNode
+        public INode VirtualNode
         {
             get { return _virtualNode; }
             set
@@ -89,7 +92,7 @@ namespace MyGraph
             NotifyOfPropertyChange(nameof(VirtualNode));
             Nodes.Add(newNode);
         }
-        public Graph(ObservableCollection<INode> nodes, VirtualNode virtualNode, ObservableCollection<IEdge> edges)
+        public Graph(ObservableCollection<INode> nodes, INode virtualNode, ObservableCollection<IEdge> edges)
         {
             Nodes = nodes;
             VirtualNode = virtualNode;
@@ -97,5 +100,14 @@ namespace MyGraph
         }
 
         public ObservableCollection<IEdge> Edges { get; }
+        public IEdge CreateVirtualEdge(INode a, INode b)
+        {
+            return new Edge(a, b);
+        }
+
+        public INode CreateVirtualNode(Point location)
+        {
+            return new Node(location);
+        }
     }
 }
