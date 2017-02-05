@@ -34,6 +34,9 @@
                         <MenuItem Header="Add node"
                                   cal:Bind.Model="{Binding Graph}"
                                   cal:Message.Attach="AddNode"/>
+                        <MenuItem Header="Validation failed"
+                                  cal:Bind.Model="{Binding Graph}"
+                                  cal:Message.Attach="AddNodeFailed"/>
                     </ContextMenu>
                 </myGraph:GraphControl.ContextMenu>
             </myGraph:GraphControl>

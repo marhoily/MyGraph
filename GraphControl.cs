@@ -121,14 +121,14 @@ namespace MyGraph
         private void Add([NotNull]INode node, DataTemplate template)
         {
             var nodeControl = (FrameworkElement)template.LoadContent();
-            MoveWhenInitialized(nodeControl, node.Location);
+            MoveWhenResized(nodeControl, node.Location);
             Move(nodeControl, node.Location);
             _canvas.Children.Add(nodeControl);
             _nodes[node] = nodeControl;
             node.PropertyChanged += OnNodePropertyChanged;
         }
 
-        private static void MoveWhenInitialized(FrameworkElement nodeControl, Point nodeLocation)
+        private static void MoveWhenResized(FrameworkElement nodeControl, Point nodeLocation)
         {
             SizeChangedEventHandler resized = (s, e) =>
             {

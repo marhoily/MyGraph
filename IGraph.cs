@@ -54,6 +54,13 @@ namespace MyGraph
             }
         }
 
+        public void AddNodeFailed()
+        {
+            Debug.Assert(VirtualNode != null);
+            VirtualNode = null;
+            NotifyOfPropertyChange(nameof(VirtualNode));
+
+        }
         public void AddNode()
         {
             Debug.Assert(VirtualNode != null);
