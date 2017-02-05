@@ -43,6 +43,19 @@
                         </Line>
                     </DataTemplate>
                 </myGraph:GraphControl.EdgeTemplate>
+                <myGraph:GraphControl.VirtualEdgeTemplate>
+                    <DataTemplate>
+                        <Line Fill="GreenYellow" Width="10" Height="10"
+                                 Stroke="Green" StrokeThickness="1">
+                            <Line.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Line!" cal:Message.Attach="StartEdge"/>
+                                </ContextMenu>
+                            </Line.ContextMenu>
+                            
+                        </Line>
+                    </DataTemplate>
+                </myGraph:GraphControl.VirtualEdgeTemplate>
                 <myGraph:GraphControl.VirtualNodeTemplate>
                     <DataTemplate>
                         <Ellipse Fill="GreenYellow" Width="10" Height="10"

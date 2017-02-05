@@ -28,11 +28,15 @@ namespace MyGraph
         public static readonly DependencyProperty EdgeTemplateProperty = DependencyProperty.Register(
             "EdgeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
 
+        public static readonly DependencyProperty VirtualEdgeTemplateProperty = DependencyProperty.Register(
+            "VirtualEdgeTemplate", typeof(DataTemplate), typeof(GraphControl),
+            new PropertyMetadata(default(DataTemplate)));
+
         private readonly Canvas _canvas;
-        private readonly Dictionary<INode, FrameworkElement> _nodes = new Dictionary<INode, FrameworkElement>();
         private readonly Dictionary<IEdge, FrameworkElement> _edges = new Dictionary<IEdge, FrameworkElement>();
-        private INode _virtualNode;
+        private readonly Dictionary<INode, FrameworkElement> _nodes = new Dictionary<INode, FrameworkElement>();
         private IEdge _virtualEdge;
+        private INode _virtualNode;
 
         public GraphControl()
         {
@@ -40,12 +44,6 @@ namespace MyGraph
             MouseUp += OnMouseUp;
             MouseMove += OnMouseMove;
             Background = Brushes.Transparent;
-        }
-
-        private void OnMouseMove(object sender, MouseEventArgs e)
-        {
-            if (_virtualEdge == null) return;
-            
         }
 
         public IGraph Graph
@@ -70,6 +68,18 @@ namespace MyGraph
         {
             get { return (DataTemplate) GetValue(EdgeTemplateProperty); }
             set { SetValue(EdgeTemplateProperty, value); }
+        }
+
+        public DataTemplate VirtualEdgeTemplate
+        {
+            get { return (DataTemplate) GetValue(VirtualEdgeTemplateProperty); }
+            set { SetValue(VirtualEdgeTemplateProperty, value); }
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_virtualEdge == null) return;
+            _virtualEdge.B.Location = e.GetPosition(this);
         }
 
         private void OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -166,19 +176,19 @@ namespace MyGraph
 
         private void Add([NotNull] IEdge edge, [NotNull] DataTemplate template)
         {
-            var edgeControl = (Line)template.LoadContent();
+            var edgeControl = (Line) template.LoadContent();
             Bind.SetModel(edgeControl, edge);
             edgeControl.Width = ActualWidth;
             edgeControl.Height = ActualHeight;
-            Panel.SetZIndex(edgeControl, -1);
+            Panel.SetZIndex(edgeControl, value: -1);
             edgeControl.X1 = edge.A.Location.X;
             edgeControl.Y1 = edge.A.Location.Y;
             edgeControl.X2 = edge.B.Location.X;
             edgeControl.Y2 = edge.B.Location.Y;
             _canvas.Children.Add(edgeControl);
             _edges[edge] = edgeControl;
-
         }
+
         private static void MoveWhenResized(FrameworkElement nodeControl, Point nodeLocation)
         {
             SizeChangedEventHandler resized = (s, e) => { Move(nodeControl, nodeLocation); };
@@ -215,9 +225,9 @@ namespace MyGraph
                     Move(element, node.Location);
                     break;
                 case nameof(INode.IsEdgeStart):
-
                     _virtualEdge = Graph.CreateVirtualEdge(node,
                         Graph.CreateVirtualNode(Mouse.GetPosition(this)));
+                    Add(_virtualEdge, VirtualEdgeTemplate);
                     break;
             }
         }
