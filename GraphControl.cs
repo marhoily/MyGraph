@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -61,7 +63,9 @@ namespace MyGraph
         }
         private void OnGraphChanged()
         {
+            Graph.Nodes.CollectionChanged += NodesOnCollectionChanged;
             Graph.PropertyChanged += GraphOnPropertyChanged;
+
             foreach (var node in Graph.Nodes)
                 Add(node, NodeTemplate);
 
@@ -69,13 +73,33 @@ namespace MyGraph
                 DrawVirtualNode();
         }
 
+        private void NodesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (var node in e.NewItems)
+                        Add((INode)node, NodeTemplate);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (var node in e.NewItems)
+                        Remove((INode)node);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private void GraphOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 case nameof(IGraph.VirtualNode):
-                    if (_virtualNode != null) Remove(_virtualNode);
-                    else DrawVirtualNode();
+                    if (_virtualNode != null)
+                        Remove(_virtualNode);
+                    _virtualNode = Graph.VirtualNode;
+                    if (_virtualNode != null)
+                        DrawVirtualNode();
                     break;
             }
         }
@@ -113,7 +137,7 @@ namespace MyGraph
 
         private static void Move(FrameworkElement nodeControl, Point location)
         {
-            Canvas.SetTop(nodeControl, location.Y-nodeControl.ActualHeight/2);
+            Canvas.SetTop(nodeControl, location.Y - nodeControl.ActualHeight / 2);
             Canvas.SetLeft(nodeControl, location.X - nodeControl.ActualWidth / 2);
 
         }

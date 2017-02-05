@@ -27,6 +27,11 @@ namespace MyGraph
         public Node(Point location)
         {
             Location = location;
+            _id = ++_counter;
         }
+
+        private static int _counter;
+        private readonly int _id;
+        public override string ToString() => $"Node({_id})";
     }
 }

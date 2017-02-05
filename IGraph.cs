@@ -20,8 +20,8 @@ namespace MyGraph
         {
             Location = location;
             LocationEditor = new PointEditorViewModel(this, nameof(Location));
+            _id = ++_counter;
         }
-
         public Point Location
         {
             get { return _location; }
@@ -32,6 +32,10 @@ namespace MyGraph
                 NotifyOfPropertyChange(nameof(Location));
             }
         }
+
+        private static int _counter;
+        private readonly int _id;
+        public override string ToString() => $"VirtualNode({_id})";
     }
 
     class Graph : PropertyChangedBase, IGraph
