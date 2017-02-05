@@ -1,7 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace MyGraph
 {
@@ -33,18 +31,21 @@ namespace MyGraph
         {
             foreach (var node in Graph.Nodes)
             {
-                var nodeControl = new Ellipse
-                {
-                    Fill = Brushes.Chocolate,
-                    Width = 10,
-                    Height = 10,
-                    Stroke = Brushes.Brown,
-                    StrokeThickness = 1
-                };
+                var nodeControl = (UIElement) NodeTemplate.LoadContent();
+
                 Canvas.SetTop(nodeControl, node.Location.Y);
                 Canvas.SetLeft(nodeControl, node.Location.X);
                 _canvas.Children.Add(nodeControl);
             }
+        }
+
+        public static readonly DependencyProperty NodeTemplateProperty = DependencyProperty.Register(
+            "NodeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+
+        public DataTemplate NodeTemplate
+        {
+            get { return (DataTemplate) GetValue(NodeTemplateProperty); }
+            set { SetValue(NodeTemplateProperty, value); }
         }
     }
 }

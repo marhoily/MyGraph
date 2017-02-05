@@ -11,7 +11,15 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="1">
-            <myGraph:GraphControl Graph="{Binding Graph}" ></myGraph:GraphControl>
+            <myGraph:GraphControl Graph="{Binding Graph}" >
+                <myGraph:GraphControl.NodeTemplate>
+                    <DataTemplate>
+                        <Ellipse Fill="Chocolate" Width="10" Height="10"
+                                 Stroke="Brown" StrokeThickness="1"/>
+                    </DataTemplate>
+
+                </myGraph:GraphControl.NodeTemplate>
+            </myGraph:GraphControl>
         </Border>
     </Grid>
 
