@@ -116,17 +116,34 @@ namespace MyGraph
         private void AddVirtualNode(Point location)
         {
             Graph.VirtualNode = new VirtualNode(location);
-            DrawVirtualNode();
         }
 
         private void Add([NotNull]INode node, DataTemplate template)
         {
             var nodeControl = (FrameworkElement)template.LoadContent();
+            MoveWhenInitialized(nodeControl, node.Location);
             Move(nodeControl, node.Location);
             _canvas.Children.Add(nodeControl);
             _nodes[node] = nodeControl;
             node.PropertyChanged += OnNodePropertyChanged;
         }
+
+        private static void MoveWhenInitialized(FrameworkElement nodeControl, Point nodeLocation)
+        {
+            SizeChangedEventHandler resized = (s, e) =>
+            {
+                Move(nodeControl, nodeLocation);
+            };
+            nodeControl.SizeChanged += resized;
+            RoutedEventHandler[] unloaded = { null };
+            unloaded[0] = (s, e) =>
+            {
+                nodeControl.SizeChanged -= resized;
+                nodeControl.Unloaded -= unloaded[0];
+            };
+            nodeControl.Unloaded += unloaded[0];
+        }
+
 
         private void Remove(INode n)
         {
@@ -141,6 +158,14 @@ namespace MyGraph
             Canvas.SetLeft(nodeControl, location.X - nodeControl.ActualWidth / 2);
 
         }
+
+       // protected override Size ArrangeOverride(Size arrangeBounds)
+       // {
+       //     foreach (var p in _nodes)
+       //         Move(p.Value, p.Key.Location);
+       //     return base.ArrangeOverride(arrangeBounds);
+       // }
+       //
         private void OnNodePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var node = (INode)sender;
