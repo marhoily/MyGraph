@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using Caliburn.Micro;
 
 namespace MyGraph
 {
-    public interface IGraph
+    public interface IGraph : INotifyPropertyChanged
     {
         ObservableCollection<INode> Nodes { get; }
         VirtualNode VirtualNode { get; set; }
@@ -32,11 +34,30 @@ namespace MyGraph
         }
     }
 
-    class Graph : IGraph
+    class Graph : PropertyChangedBase, IGraph
     {
+        private VirtualNode _virtualNode;
         public ObservableCollection<INode> Nodes { get; }
-        public VirtualNode VirtualNode { get; set; }
 
+        public VirtualNode VirtualNode
+        {
+            get { return _virtualNode; }
+            set
+            {
+                if (Equals(value, _virtualNode)) return;
+                _virtualNode = value;
+                NotifyOfPropertyChange(nameof(VirtualNode));
+            }
+        }
+
+        public void AddNode()
+        {
+            Debug.Assert(VirtualNode != null);
+            var newNode = new Node(VirtualNode.Location);
+            VirtualNode = null;
+            NotifyOfPropertyChange(nameof(VirtualNode));
+            Nodes.Add(newNode);
+        }
         public Graph(ObservableCollection<INode> nodes, VirtualNode virtualNode)
         {
             Nodes = nodes;

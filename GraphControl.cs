@@ -16,6 +16,7 @@ namespace MyGraph
         public static readonly DependencyProperty VirtualNodeTemplateProperty = DependencyProperty.Register("VirtualNodeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
 
         private readonly Canvas _canvas;
+        private INode _virtualNode;
         private readonly Dictionary<INode, FrameworkElement> _nodes = new Dictionary<INode, FrameworkElement>();
 
         public GraphControl()
@@ -60,17 +61,32 @@ namespace MyGraph
         }
         private void OnGraphChanged()
         {
+            Graph.PropertyChanged += GraphOnPropertyChanged;
             foreach (var node in Graph.Nodes)
-                DrawNode(node, NodeTemplate);
+                Add(node, NodeTemplate);
 
             if (Graph.VirtualNode != null)
                 DrawVirtualNode();
         }
 
+        private void GraphOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(IGraph.VirtualNode):
+                    if (_virtualNode != null) Remove(_virtualNode);
+                    else DrawVirtualNode();
+                    break;
+            }
+        }
+
+
+
         private void DrawVirtualNode()
         {
             Debug.Assert(Graph.VirtualNode != null);
-            DrawNode(Graph.VirtualNode, VirtualNodeTemplate);
+            _virtualNode = Graph.VirtualNode;
+            Add(_virtualNode, VirtualNodeTemplate);
         }
 
         private void AddVirtualNode(Point location)
@@ -79,13 +95,20 @@ namespace MyGraph
             DrawVirtualNode();
         }
 
-        private void DrawNode([NotNull]INode node, DataTemplate template)
+        private void Add([NotNull]INode node, DataTemplate template)
         {
             var nodeControl = (FrameworkElement)template.LoadContent();
             Move(nodeControl, node.Location);
             _canvas.Children.Add(nodeControl);
             _nodes[node] = nodeControl;
             node.PropertyChanged += OnNodePropertyChanged;
+        }
+
+        private void Remove(INode n)
+        {
+            _canvas.Children.Remove(_nodes[n]);
+            _nodes.Remove(n);
+            n.PropertyChanged -= OnNodePropertyChanged;
         }
 
         private static void Move(FrameworkElement nodeControl, Point location)

@@ -2,7 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:myGraph="clr-namespace:MyGraph" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cal="http://www.caliburnproject.org"
+        mc:Ignorable="d"
         d:DataContext="{d:DesignInstance myGraph:RootViewModel}">
 
     <Grid Background="White">
@@ -27,8 +29,14 @@
                                  Stroke="Green" StrokeThickness="1"/>
                     </DataTemplate>
                 </myGraph:GraphControl.VirtualNodeTemplate>
+                <myGraph:GraphControl.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add node"
+                                  cal:Bind.Model="{Binding Graph}"
+                                  cal:Message.Attach="AddNode"/>
+                    </ContextMenu>
+                </myGraph:GraphControl.ContextMenu>
             </myGraph:GraphControl>
         </Border>
     </Grid>
-
 </Window>
