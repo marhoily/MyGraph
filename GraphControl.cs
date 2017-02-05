@@ -30,22 +30,38 @@ namespace MyGraph
         private void OnGraphChanged()
         {
             foreach (var node in Graph.Nodes)
-            {
-                var nodeControl = (UIElement) NodeTemplate.LoadContent();
+                AddNode(node, NodeTemplate);
 
-                Canvas.SetTop(nodeControl, node.Location.Y);
-                Canvas.SetLeft(nodeControl, node.Location.X);
-                _canvas.Children.Add(nodeControl);
-            }
+            if (Graph.VirtualNode != null)
+                AddNode(Graph.VirtualNode, VirtualNodeTemplate);
         }
 
-        public static readonly DependencyProperty NodeTemplateProperty = DependencyProperty.Register(
-            "NodeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+        private void AddNode(INode node, DataTemplate template)
+        {
+            var nodeControl = (UIElement) template.LoadContent();
+            Canvas.SetTop(nodeControl, node.Location.Y);
+            Canvas.SetLeft(nodeControl, node.Location.X);
+            _canvas.Children.Add(nodeControl);
+        }
+
+        public static readonly DependencyProperty NodeTemplateProperty =
+            DependencyProperty.Register(
+                "NodeTemplate", typeof(DataTemplate), typeof(GraphControl),
+                new PropertyMetadata(default(DataTemplate)));
 
         public DataTemplate NodeTemplate
         {
             get { return (DataTemplate) GetValue(NodeTemplateProperty); }
             set { SetValue(NodeTemplateProperty, value); }
+        }
+
+        public static readonly DependencyProperty VirtualNodeTemplateProperty = DependencyProperty.Register(
+            "VirtualNodeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+
+        public DataTemplate VirtualNodeTemplate
+        {
+            get { return (DataTemplate) GetValue(VirtualNodeTemplateProperty); }
+            set { SetValue(VirtualNodeTemplateProperty, value); }
         }
     }
 }

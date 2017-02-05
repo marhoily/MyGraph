@@ -14,7 +14,8 @@ namespace MyGraph
             {
                 new Node(new Point(100, 100)),
                 new Node(new Point(200, 200)),
-            });
+            },
+            new VirtualNode(new Point(300, 300)));
         }
     }
 }
