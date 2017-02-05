@@ -15,7 +15,7 @@ namespace MyGraph {
 
             container.Singleton<IWindowManager, WindowManager>();
             container.Singleton<IEventAggregator, EventAggregator>();
-            container.PerRequest<IShell, ShellViewModel>();
+            container.PerRequest<IShell, RootViewModel>();
         }
 
         protected override object GetInstance(Type service, string key) {
