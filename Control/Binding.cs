@@ -5,31 +5,31 @@ using System.Linq.Expressions;
 
 namespace MyGraph
 {
-    public sealed class Binding<TSource, TDestination> : IDisposable
+    public sealed class Binding<TSource, TTarget> : IDisposable
         where TSource : INotifyPropertyChanged
     {
         public TSource Source { get; }
-        public TDestination Destination { get; }
+        public TTarget Target { get; }
         private readonly List<Action> _disposables = new List<Action>();
-        private readonly Dictionary<string, Action<TSource, TDestination>>
-            _propertyChangedReactions = new Dictionary<string, Action<TSource, TDestination>>();
+        private readonly Dictionary<string, Action<TSource, TTarget>>
+            _propertyChangedReactions = new Dictionary<string, Action<TSource, TTarget>>();
 
-        public Binding(TSource source, TDestination destination)
+        public Binding(TSource source, TTarget target)
         {
             Source = source;
-            Destination = destination;
+            Target = target;
             Source.PropertyChanged += SourceOnPropertyChanged;
             _disposables.Add(() => Source.PropertyChanged -= SourceOnPropertyChanged);
         }
 
         private void SourceOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            Action<TSource, TDestination> action;
+            Action<TSource, TTarget> action;
             if (_propertyChangedReactions.TryGetValue(e.PropertyName, out action))
-                action(Source, Destination);
+                action(Source, Target);
         }
 
-        public Binding<TSource, TDestination> Attach(Action<Binding<TSource, TDestination>> onDispose)
+        public Binding<TSource, TTarget> Attach(Action<Binding<TSource, TTarget>> onDispose)
         {
             _disposables.Add(() => onDispose(this));
             return this;
@@ -37,22 +37,22 @@ namespace MyGraph
 
         public void Dispose() => _disposables.ForEach(x => x());
 
-        public Binding<TSource, TDestination> Link(
-            Expression<Action<TSource, TDestination>> action)
+        public Binding<TSource, TTarget> Link(
+            Expression<Action<TSource, TTarget>> action)
         {
             var compiledAction = action.Compile();
-            compiledAction(Source, Destination);
+            compiledAction(Source, Target);
             foreach (var propertyName in action.GetPropertyNames())
                 _propertyChangedReactions[propertyName] = compiledAction;
             return this;
         }
 
-        public Binding<TSource, TDestination> LinkTarget(
-            Action<TDestination> now,
-            Action<TDestination> onDispose)
+        public Binding<TSource, TTarget> LinkTarget(
+            Action<TTarget> now,
+            Action<TTarget> onDispose)
         {
-            now(Destination);
-            _disposables.Add(() => onDispose(Destination));
+            now(Target);
+            _disposables.Add(() => onDispose(Target));
             return this;
         }
     }

@@ -20,7 +20,7 @@ namespace MyGraph
         private void GraphChanged()
         {
             foreach (var vertex in Graph.Vertices)
-                _vertices.GetDestination(vertex);
+                _vertices.GetTarget(vertex);
         }
     }
 }

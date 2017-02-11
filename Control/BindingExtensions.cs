@@ -5,13 +5,13 @@ namespace MyGraph
 {
     public static class BindingExtensions
     {
-        public static Binding<TSource, TDestination> Bind<TSource, TDestination>(
-            this TDestination destination, TSource source) 
+        public static Binding<TSource, TTarget> Bind<TSource, TTarget>(
+            this TTarget target, TSource source) 
             where TSource : INotifyPropertyChanged
-            where TDestination : DependencyObject
+            where TTarget : DependencyObject
         {
-            Caliburn.Micro.Bind.SetModel(destination, source);
-            return new Binding<TSource, TDestination>(source, destination);
+            Caliburn.Micro.Bind.SetModel(target, source);
+            return new Binding<TSource, TTarget>(source, target);
         }
     }
 }
