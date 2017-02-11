@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Windows;
-using Caliburn.Micro;
 using JetBrains.Annotations;
 using Expression = System.Linq.Expressions.Expression;
 
@@ -39,11 +38,6 @@ namespace MyGraph
         public static T Cast<T>(this object element) 
         {
             return (T)element;
-        }
-        public static T SetDataContext<T>(this T element, object value) where T : FrameworkElement
-        {
-            Bind.SetModel(element, value);
-            return element;
         }
         public static T AddTo<T>(this T element, Plot plot) where T : UIElement
         {

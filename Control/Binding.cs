@@ -46,5 +46,14 @@ namespace MyGraph
                 _propertyChangedReactions[propertyName] = compiledAction;
             return this;
         }
+
+        public Binding<TSource, TDestination> LinkTarget(
+            Action<TDestination> now,
+            Action<TDestination> onDispose)
+        {
+            now(Destination);
+            _disposables.Add(() => onDispose(Destination));
+            return this;
+        }
     }
 }

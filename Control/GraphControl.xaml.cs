@@ -12,10 +12,9 @@ namespace MyGraph
             _vertices = new BindingRegistry<IVertex, FrameworkElement>(
                 vertex => VertexTemplate.LoadContent()
                     .Cast<FrameworkElement>()
-                    .AddTo(_plot)
-                    .SetDataContext(vertex)
                     .Bind(vertex)
-                    .Link((v, c) => c.MoveTo(v.Location)));
+                    .Link((v, c) => c.MoveTo(v.Location))
+                    .LinkTarget(c => _plot.Children.Add(c), c =>_plot.Children.Remove(c)));
         }
 
         private void GraphChanged()
