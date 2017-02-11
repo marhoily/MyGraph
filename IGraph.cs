@@ -34,34 +34,6 @@ namespace MyGraph
         }
     }
 
-   /* public class VirtualNode : PropertyChangedBase, INode
-    {
-        private Point _location;
-        public PointEditorViewModel LocationEditor { get; }
-        public VirtualNode(Point location)
-        {
-            Location = location;
-            LocationEditor = new PointEditorViewModel(this, nameof(Location));
-            _id = ++_counter;
-        }
-        public Point Location
-        {
-            get { return _location; }
-            set
-            {
-                if (value.Equals(_location)) return;
-                _location = value;
-                NotifyOfPropertyChange(nameof(Location));
-            }
-        }
-
-        private static int _counter;
-        private readonly int _id;
-        public override string ToString() => $"VirtualNode({_id})";
-        public bool IsEdgeStart => false;
-    }
-    */
-
     public class Graph : PropertyChangedBase, IGraph
     {
         private Node _virtualNode;
