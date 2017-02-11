@@ -10,6 +10,7 @@ namespace MyGraph
         {
             InitializeComponent();
             _vertices = new BindingRegistry<IVertex, FrameworkElement>(
+                () => Graph.Vertices,
                 vertex => VertexTemplate.LoadContent()
                     .Cast<FrameworkElement>()
                     .Bind(vertex)

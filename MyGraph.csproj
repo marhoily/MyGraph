@@ -92,6 +92,7 @@
     <Compile Include="IShell.cs" />
     <Compile Include="TestImplementation\Vertex.cs" />
     <Compile Include="Control\Plot.cs" />
+    <Compile Include="Utilities\ExpressionExtensions.cs" />
     <Compile Include="Utilities\PlotExtensions.cs" />
     <Compile Include="RootViewModel.cs" />
     <Compile Include="App.xaml.cs">
