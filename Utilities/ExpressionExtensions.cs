@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
@@ -22,24 +23,54 @@ namespace MyGraph
             return () => trackable.PropertyChanged -= handler;
         }
 
-        public static Action Track<T>(
-            this Expression<Func<T>> exp, Action<T> onChanged)
+        public static string GetPropertyName(this Expression<Func<object>> exp)
         {
-            var v = new AccessListVisitor();
-            v.Visit(exp.Body);
-            PropertyChangedEventHandler handler = (s, e) =>
-            {
-            };
-            foreach (var expression in v.All)
-            {
-                var getPartial = Expression.Lambda<Func<object>>(expression, false).Compile();
-                var part = getPartial() as INotifyPropertyChanged;
-                if (part == null) continue;
-                part.PropertyChanged += handler;
-                //yield return () => part.PropertyChanged -= handler;
-            }
-            return () => { };
+            var access = exp.Body as MemberExpression;
+            var prop = access?.Member as PropertyInfo;
+            return prop?.Name;
         }
+
+        struct Access
+        {
+            public INotifyPropertyChanged Trackable { get; }
+            public string PropertyName { get; }
+
+            public Access(INotifyPropertyChanged trackable, string propertyName)
+            {
+                Trackable = trackable;
+                PropertyName = propertyName;
+            }
+        }
+        public static Action Track<T>(this Expression<Func<T>> exp, Action<T> onChanged)
+        {
+            return Track(GetAccesses(exp), onChanged);
+        }
+
+        private static Action Track<T>(IEnumerable<Access> accesses, Action<T> onChanged)
+        {
+            var first = accesses.FirstOrDefault();
+            if (first.PropertyName == null) return () => { };
+            var trackFirst = first.Trackable.Track(first.PropertyName, onChanged);
+            var trackRest = Track(accesses.Skip(1), onChanged);
+            return () => { trackFirst(); trackRest(); };
+        }
+
+        private static List<Access> GetAccesses<T>(Expression<Func<T>> exp)
+        {
+            var subexpressions = ExtractPath(exp).ToList();
+            return subexpressions.Zip(subexpressions.Skip(1),
+                    (x, y) => new Access(x.Compile()() as INotifyPropertyChanged, y.GetPropertyName()))
+                .Where(x => x.Trackable != null && x.PropertyName != null)
+                .ToList();
+        }
+
+        internal static IEnumerable<Expression<Func<object>>> ExtractPath<T>(Expression<Func<T>> exp)
+        {
+            var v = new AccessListVisitor(exp.Body);
+            v.Visit(exp.Body);
+            return v.All.Select(e => Expression.Lambda<Func<object>>(e, false));
+        }
+
         public static Action Track<T>(this Expression<Func<ObservableCollection<T>>> exp,
             Action<T> added, Action<T> removed)
         {
@@ -71,11 +102,16 @@ namespace MyGraph
 
         internal sealed class AccessListVisitor : ExpressionVisitor
         {
-            public List<Expression> All { get; } = new List<Expression>();
+            public AccessListVisitor(Expression root)
+            {
+                All.Push(root);
+            }
+
+            public Stack<Expression> All { get; } = new Stack<Expression>();
 
             protected override Expression VisitMember(MemberExpression node)
             {
-                All.Add(node.Expression);
+                All.Push(node.Expression);
                 return base.VisitMember(node);
             }
         }
