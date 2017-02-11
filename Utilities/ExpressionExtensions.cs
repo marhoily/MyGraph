@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
@@ -10,10 +11,29 @@ namespace MyGraph
 {
     public static class ExpressionExtensions
     {
+        public static Action Track<T>(
+            this Expression<Func<T>> exp, Action<T> onChanged)
+        {
+            var v = new AccessListVisitor();
+            v.Visit(exp.Body);
+            PropertyChangedEventHandler handler = (s, e) =>
+            {
+            };
+            foreach (var expression in v.All)
+            {
+                var getPartial = Expression.Lambda<Func<object>>(expression, false).Compile();
+                var part = getPartial() as INotifyPropertyChanged;
+                if (part == null) continue;
+                part.PropertyChanged += handler;
+                //yield return () => part.PropertyChanged -= handler;
+            }
+            return () => { };
+        }
         public static Action Track<T>(this Expression<Func<ObservableCollection<T>>> exp,
             Action<T> added, Action<T> removed)
         {
-            var collection = exp.Compile()();
+            var getCollection = exp.Compile();
+            var collection = getCollection();
             NotifyCollectionChangedEventHandler handler = (s, e) =>
             {
                 switch (e.Action)
@@ -33,14 +53,10 @@ namespace MyGraph
             collection.CollectionChanged += handler;
             foreach (var item in collection)
                 added(item);
-            var v = new AccessListVisitor();
-            v.Visit(exp.Body);
-            foreach (var expression in v.All)
-            {
-                
-            }
+
             return () => collection.CollectionChanged -= handler; 
         }
+        
 
         internal sealed class AccessListVisitor : ExpressionVisitor
         {
