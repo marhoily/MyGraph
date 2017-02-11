@@ -14,11 +14,15 @@ namespace MyGraph
             Bind.SetModel(element, value);
             return element;
         }
-        public static T PlaceAt<T>(this T element, Plot plot, Point p) where T : UIElement
+        public static T AddTo<T>(this T element, Plot plot) where T : UIElement
+        {
+            plot.Children.Add(element);
+            return element;
+        }
+        public static T MoveTo<T>(this T element, Point p) where T : UIElement
         {
             Plot.SetX(element, p.X);
             Plot.SetY(element, p.Y);
-            plot.Children.Add(element);
             return element;
         }
     }

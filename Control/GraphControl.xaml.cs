@@ -10,17 +10,18 @@ namespace MyGraph
         {
             InitializeComponent();
             _vertices = new BindingRegistry<IVertex, FrameworkElement>(
-                vertice => VertexTemplate.LoadContent()
+                vertex => VertexTemplate.LoadContent()
                     .Cast<FrameworkElement>()
-                    .PlaceAt(_plot, vertice.Location)
-                    .SetDataContext(vertice)
-                    .Bind(vertice));
+                    .AddTo(_plot)
+                    .SetDataContext(vertex)
+                    .Bind(vertex)
+                    .Link(v => v.Location, (v, c) => c.MoveTo(v.Location)));
         }
 
         private void GraphChanged()
         {
-            foreach (var vertice in Graph.Vertices)
-                _vertices.GetDestination(vertice);
+            foreach (var vertex in Graph.Vertices)
+                _vertices.GetDestination(vertex);
         }
     }
 }

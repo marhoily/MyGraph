@@ -1,8 +1,10 @@
 using System;
+using System.ComponentModel;
 
 namespace MyGraph
 {
-    public sealed class BindingRegistry<TSource, TDestination>
+    public sealed class BindingRegistry<TSource, TDestination> 
+        where TSource : INotifyPropertyChanged
     {
         private readonly CachingDictionary<TSource, Binding<TSource, TDestination>> _map;
 
