@@ -33,24 +33,41 @@ namespace MyGraph
             collection.CollectionChanged += handler;
             foreach (var item in collection)
                 added(item);
-
+            var v = new AccessListVisitor();
+            v.Visit(exp.Body);
+            foreach (var expression in v.All)
+            {
+                
+            }
             return () => collection.CollectionChanged -= handler; 
         }
 
+        internal sealed class AccessListVisitor : ExpressionVisitor
+        {
+            public List<Expression> All { get; } = new List<Expression>();
+
+            protected override Expression VisitMember(MemberExpression node)
+            {
+                All.Add(node.Expression);
+                return base.VisitMember(node);
+            }
+        }
+
+
         public static List<string> GetPropertyNames<TTarget, T2>(this Expression<Action<TTarget, T2>> exp)
         {
-            var myVisitor = new MyVisitor(typeof(TTarget));
+            var myVisitor = new NameVisitor(typeof(TTarget));
             myVisitor.Visit(exp.Body);
             return myVisitor.Names;
         }
 
-        private sealed class MyVisitor : ExpressionVisitor
+        private sealed class NameVisitor : ExpressionVisitor
         {
             [NotNull]
             private readonly Type _filter;
             public readonly List<string> Names = new List<string>();
 
-            public MyVisitor([NotNull] Type filter)
+            public NameVisitor([NotNull] Type filter)
             {
                 _filter = filter;
             }
