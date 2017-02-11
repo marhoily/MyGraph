@@ -4,13 +4,13 @@ namespace MyGraph
 {
     public partial class GraphControl
     {
-        public static readonly DependencyProperty NodeTemplateProperty = DependencyProperty.Register(
-            "NodeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+        public static readonly DependencyProperty VertexTemplateProperty = DependencyProperty.Register(
+            "VertexTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
 
-        public DataTemplate NodeTemplate
+        public DataTemplate VertexTemplate
         {
-            get { return (DataTemplate) GetValue(NodeTemplateProperty); }
-            set { SetValue(NodeTemplateProperty, value); }
+            get { return (DataTemplate) GetValue(VertexTemplateProperty); }
+            set { SetValue(VertexTemplateProperty, value); }
         }
 
         public static readonly DependencyProperty GraphProperty = DependencyProperty.Register(

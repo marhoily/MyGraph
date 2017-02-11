@@ -10,9 +10,9 @@ namespace MyGraph
 
         public RootViewModel()
         {
-            Graph = new Graph(new ObservableCollection<INode>
+            Graph = new Graph(new ObservableCollection<IVertex>
             {
-                new Node(new Point(100, 100))
+                new Vertex(new Point(100, 100))
             });
         }
     }

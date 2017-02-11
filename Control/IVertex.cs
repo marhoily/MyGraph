@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace MyGraph
 {
-    public interface INode : INotifyPropertyChanged
+    public interface IVertex : INotifyPropertyChanged
     {
         Point Location { get; }
     }

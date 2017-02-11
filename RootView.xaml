@@ -8,12 +8,12 @@
     <TabControl>
         <TabItem Header="GraphControl">
             <local:GraphControl Graph="{Binding Graph}">
-                <local:GraphControl.NodeTemplate>
+                <local:GraphControl.VertexTemplate>
                     <DataTemplate>
                         <Ellipse Width="10" Height="10"
                                  Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"/>
                     </DataTemplate>
-                </local:GraphControl.NodeTemplate>
+                </local:GraphControl.VertexTemplate>
             </local:GraphControl>
         </TabItem>
         <TabItem Header="Plot">

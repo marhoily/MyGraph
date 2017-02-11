@@ -5,11 +5,11 @@ namespace MyGraph
 {
     public sealed class Graph : PropertyChangedBase, IGraph
     {
-        public ObservableCollection<INode> Nodes { get; }
+        public ObservableCollection<IVertex> Vertices { get; }
 
-        public Graph(ObservableCollection<INode> nodes)
+        public Graph(ObservableCollection<IVertex> vertices)
         {
-            Nodes = nodes;
+            Vertices = vertices;
         }
     }
 }

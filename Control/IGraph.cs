@@ -4,6 +4,6 @@ namespace MyGraph
 {
     public interface IGraph
     {
-        ObservableCollection<INode> Nodes { get; }
+        ObservableCollection<IVertex> Vertices { get; }
     }
 }

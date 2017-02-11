@@ -72,16 +72,21 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
-    <Compile Include="Control\GraphControl.Properties.cs" />
+    <Compile Include="Control\Binding.cs" />
+    <Compile Include="Control\BindingExtensions.cs" />
+    <Compile Include="Control\BindingRegistry.cs" />
+    <Compile Include="Control\GraphControl.Properties.cs">
+      <DependentUpon>GraphControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\CachingDictionary.cs" />
     <Compile Include="TestImplementation\Graph.cs" />
     <Compile Include="Control\GraphControl.xaml.cs">
       <DependentUpon>GraphControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\IGraph.cs" />
-    <Compile Include="Control\INode.cs" />
+    <Compile Include="Control\IVertex.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="TestImplementation\Node.cs" />
+    <Compile Include="TestImplementation\Vertex.cs" />
     <Compile Include="Control\Plot.cs" />
     <Compile Include="Utilities\PlotExtensions.cs" />
     <Compile Include="RootViewModel.cs" />
