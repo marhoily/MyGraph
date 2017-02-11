@@ -37,8 +37,7 @@ namespace MyGraph
 
         public void Dispose() => _disposables.ForEach(x => x());
 
-        public Binding<TSource, TTarget> Link(
-            Expression<Action<TSource, TTarget>> action)
+        public Binding<TSource, TTarget> Link(Expression<Action<TSource, TTarget>> action)
         {
             var compiledAction = action.Compile();
             compiledAction(Source, Target);
@@ -47,12 +46,10 @@ namespace MyGraph
             return this;
         }
 
-        public Binding<TSource, TTarget> LinkTarget(
-            Action<TTarget> now,
-            Action<TTarget> onDispose)
+        public Binding<TSource, TTarget> LinkTarget(Action<TTarget> establish, Action<TTarget> destroy)
         {
-            now(Target);
-            _disposables.Add(() => onDispose(Target));
+            establish(Target);
+            _disposables.Add(() => destroy(Target));
             return this;
         }
     }
