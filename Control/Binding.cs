@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace MyGraph
 {
@@ -12,7 +11,7 @@ namespace MyGraph
         public TSource Source { get; }
         public TDestination Destination { get; }
         private readonly List<Action> _disposables = new List<Action>();
-        private readonly Dictionary<string, Action<TSource, TDestination>> 
+        private readonly Dictionary<string, Action<TSource, TDestination>>
             _propertyChangedReactions = new Dictionary<string, Action<TSource, TDestination>>();
 
         public Binding(TSource source, TDestination destination)
@@ -39,18 +38,12 @@ namespace MyGraph
         public void Dispose() => _disposables.ForEach(x => x());
 
         public Binding<TSource, TDestination> Link(
-            Func<TSource, object> propertyName, Action<TSource, TDestination> action)
+            Expression<Action<TSource, TDestination>> action)
         {
-            action(Source, Destination);
-            return OnChange(propertyName, action);
-        }
-        public Binding<TSource, TDestination> OnChange(
-            Func<TSource, object> propertyName, Action<TSource, TDestination> action)
-        {
-            var exp = propertyName as MemberExpression;
-            var prop = exp?.Member as PropertyInfo;
-            if (prop == null) throw new ArgumentOutOfRangeException(nameof(propertyName));
-            _propertyChangedReactions[prop.Name] = action;
+            var compiledAction = action.Compile();
+            compiledAction(Source, Destination);
+            foreach (var propertyName in action.GetPropertyNames())
+                _propertyChangedReactions[propertyName] = compiledAction;
             return this;
         }
     }

@@ -15,7 +15,7 @@ namespace MyGraph
                     .AddTo(_plot)
                     .SetDataContext(vertex)
                     .Bind(vertex)
-                    .Link(v => v.Location, (v, c) => c.MoveTo(v.Location)));
+                    .Link((v, c) => c.MoveTo(v.Location)));
         }
 
         private void GraphChanged()
