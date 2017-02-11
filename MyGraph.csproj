@@ -72,14 +72,27 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Utilities\CachingDictionary.cs" />
+    <Compile Include="TestImplementation\Graph.cs" />
+    <Compile Include="Control\GraphControl.xaml.cs">
+      <DependentUpon>GraphControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\IGraph.cs" />
+    <Compile Include="Control\INode.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="Plot.cs" />
-    <Compile Include="ShellViewModel.cs" />
+    <Compile Include="TestImplementation\Node.cs" />
+    <Compile Include="Control\Plot.cs" />
+    <Compile Include="Utilities\PlotExtensions.cs" />
+    <Compile Include="RootViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ShellView.xaml">
+    <Page Include="Control\GraphControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RootView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

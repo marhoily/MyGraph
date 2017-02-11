@@ -1,0 +1,29 @@
+<Window x:Class="MyGraph.RootView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:MyGraph" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:RootViewModel}">
+
+    <TabControl>
+        <TabItem Header="GraphControl">
+            <local:GraphControl Graph="{Binding Graph}">
+                <local:GraphControl.NodeTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="10" Height="10"
+                                 Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"/>
+                    </DataTemplate>
+                </local:GraphControl.NodeTemplate>
+            </local:GraphControl>
+        </TabItem>
+        <TabItem Header="Plot">
+            <local:Plot>
+                <Rectangle local:Plot.X="100" local:Plot.Y="50"
+                           Width="160" Height="60" Fill="LawnGreen"
+                           Stroke="DarkGreen" StrokeThickness="1"/>
+
+            </local:Plot>
+        </TabItem>
+    </TabControl>
+
+</Window>
