@@ -11,6 +11,17 @@ namespace MyGraph
 {
     public static class ExpressionExtensions
     {
+        public static Action Track<T>(this INotifyPropertyChanged trackable, string propertyName, Action<T> onChanged)
+        {
+            if (trackable == null) return () => { };
+            PropertyChangedEventHandler handler = (s, e) =>
+            {
+                if (e.PropertyName == propertyName) onChanged((T) s);
+            };
+            trackable.PropertyChanged += handler;
+            return () => trackable.PropertyChanged -= handler;
+        }
+
         public static Action Track<T>(
             this Expression<Func<T>> exp, Action<T> onChanged)
         {
