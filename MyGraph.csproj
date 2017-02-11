@@ -78,6 +78,7 @@
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="GraphControl.cs" />
+    <Compile Include="GraphControl.Properties.cs" />
     <Compile Include="IGraph.cs" />
     <Compile Include="INode.cs" />
     <Compile Include="IShell.cs" />

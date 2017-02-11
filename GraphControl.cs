@@ -13,25 +13,8 @@ using JetBrains.Annotations;
 
 namespace MyGraph
 {
-    public sealed class GraphControl : UserControl
+    public sealed partial class GraphControl : UserControl
     {
-        public static readonly DependencyProperty GraphProperty = DependencyProperty.Register("Graph", typeof(IGraph),
-            typeof(GraphControl), new PropertyMetadata(default(IGraph), OnGraphChanged));
-
-        public static readonly DependencyProperty NodeTemplateProperty = DependencyProperty.Register("NodeTemplate",
-            typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
-
-        public static readonly DependencyProperty VirtualNodeTemplateProperty =
-            DependencyProperty.Register("VirtualNodeTemplate", typeof(DataTemplate), typeof(GraphControl),
-                new PropertyMetadata(default(DataTemplate)));
-
-        public static readonly DependencyProperty EdgeTemplateProperty = DependencyProperty.Register(
-            "EdgeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
-
-        public static readonly DependencyProperty VirtualEdgeTemplateProperty = DependencyProperty.Register(
-            "VirtualEdgeTemplate", typeof(DataTemplate), typeof(GraphControl),
-            new PropertyMetadata(default(DataTemplate)));
-
         private readonly Canvas _canvas;
         private readonly Dictionary<IEdge, FrameworkElement> _edges = new Dictionary<IEdge, FrameworkElement>();
         private readonly Dictionary<INode, FrameworkElement> _nodes = new Dictionary<INode, FrameworkElement>();
@@ -44,36 +27,6 @@ namespace MyGraph
             MouseUp += OnMouseUp;
             MouseMove += OnMouseMove;
             Background = Brushes.Transparent;
-        }
-
-        public IGraph Graph
-        {
-            get { return (IGraph)GetValue(GraphProperty); }
-            set { SetValue(GraphProperty, value); }
-        }
-
-        public DataTemplate NodeTemplate
-        {
-            get { return (DataTemplate)GetValue(NodeTemplateProperty); }
-            set { SetValue(NodeTemplateProperty, value); }
-        }
-
-        public DataTemplate VirtualNodeTemplate
-        {
-            get { return (DataTemplate)GetValue(VirtualNodeTemplateProperty); }
-            set { SetValue(VirtualNodeTemplateProperty, value); }
-        }
-
-        public DataTemplate EdgeTemplate
-        {
-            get { return (DataTemplate)GetValue(EdgeTemplateProperty); }
-            set { SetValue(EdgeTemplateProperty, value); }
-        }
-
-        public DataTemplate VirtualEdgeTemplate
-        {
-            get { return (DataTemplate)GetValue(VirtualEdgeTemplateProperty); }
-            set { SetValue(VirtualEdgeTemplateProperty, value); }
         }
 
         private void OnMouseMove(object sender, MouseEventArgs e)
