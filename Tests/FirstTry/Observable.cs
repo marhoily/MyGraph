@@ -14,18 +14,21 @@ namespace Tests.FirstTry
         void Subscribe(Action<T> handler);
     }
 
-    internal sealed class Npc<T> : IObservable<T>
+    internal abstract class ResourceManager : IDisposable
+    {
+        public List<Action> Resources { get; } = new List<Action>();
+        public void Dispose() => Resources.ForEach(dispose => dispose());
+    }
+    internal sealed class Npc<T> : ResourceManager, IObservable<T>
     {
         private INotifyPropertyChanged _source;
         private readonly string _propertyName;
         private readonly List<Action<T>> _changed = new List<Action<T>>();
 
-        public Npc(string propertyName, INotifyPropertyChanged source = null, Action<T> changeHandler = null)
+        public Npc(string propertyName)
         {
             _propertyName = propertyName;
-            ChangeSource(source);
-            if (changeHandler != null)
-                _changed.Add(changeHandler);
+            Resources.Add(Unsubscribe);
         }
 
         public T Value { get; private set; }
@@ -46,7 +49,6 @@ namespace Tests.FirstTry
                 _source.PropertyChanged += OnPropertyChanged;
             }
         }
-
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == _propertyName)
@@ -64,34 +66,10 @@ namespace Tests.FirstTry
             Value = value;
             _changed.ForEach(handle => handle(value));
         }
-
-        public void Dispose()
+        private void Unsubscribe()
         {
             if (_source != null)
                 _source.PropertyChanged -= OnPropertyChanged;
-        }
-    }
-    internal sealed class Observable<T> : IObservable<T>
-    {
-        private readonly IObservable<INotifyPropertyChanged> _source;
-        private readonly Npc<T> _npc;
-        private readonly List<Action<T>> _changed = new List<Action<T>>();
-
-        public Observable(IObservable<INotifyPropertyChanged> source, string propertyName)
-        {
-            _source = source;
-            _npc = new Npc<T>(propertyName,
-                changeHandler: v => _changed.ForEach(h => h(v)));
-            _source.Subscribe(_npc.ChangeSource);
-            _npc.ChangeSource(_source.Value);
-        }
-        public T Value => _npc.Value;
-        public void Subscribe(Action<T> handler) => _changed.Add(handler);
-
-        public void Dispose()
-        {
-            _npc.Dispose();
-            _source?.Dispose();
         }
     }
 
@@ -99,45 +77,26 @@ namespace Tests.FirstTry
     {
         public static IObservable<T> Observe<T>(this INotifyPropertyChanged source, string propertyName, Action<T> handler = null)
         {
-            return new Npc<T>(propertyName, source, handler);
+            return CreateNpc(source, propertyName, handler);
         }
         public static IObservable<T> Observe<T>(this IObservable<INotifyPropertyChanged> source, string propertyName, Action<T> handler = null)
         {
-            var observable = new Observable<T>(source, propertyName);
-            if (handler != null) observable.Subscribe(handler);
-            return observable;
+            var npc = CreateNpc(source.Value, propertyName, handler);
+            npc.Resources.Add(source.Dispose);
+            source.Subscribe(npc.ChangeSource);
+            return npc;
+        }
+
+        private static Npc<T> CreateNpc<T>(INotifyPropertyChanged source, string propertyName, Action<T> handler)
+        {
+            var npc = new Npc<T>(propertyName);
+            npc.ChangeSource(source);
+            if (handler != null) npc.Subscribe(handler);
+            return npc;
         }
     }
     public sealed class ObservablesTest
     {
-        sealed class FakeObservable : IObservable<INotifyPropertyChanged>
-        {
-            public INotifyPropertyChanged Value
-            {
-                get { return _value; }
-                set
-                {
-                    _value = value;
-                    _handler?.Invoke(value);
-                }
-            }
-
-            private Action<INotifyPropertyChanged> _handler;
-            private INotifyPropertyChanged _value;
-
-            public FakeObservable(INotifyPropertyChanged value)
-            {
-                Value = value;
-            }
-            void IObservable<INotifyPropertyChanged>.Subscribe(Action<INotifyPropertyChanged> handler)
-            {
-                _handler += handler;
-            }
-
-            void IDisposable.Dispose()
-            {
-            }
-        }
         private static S[] Chain(char start, int count)
         {
             var proto = Enumerable.Range(0, count)
@@ -147,8 +106,6 @@ namespace Tests.FirstTry
                 p.a.X = p.b;
             return proto;
         }
-        private readonly S _a = new S("a", null);
-        private readonly S _b = new S("b", null);
         private readonly S _z = new S("z", null);
         private readonly List<string> _log = new List<string>();
 
@@ -166,71 +123,17 @@ namespace Tests.FirstTry
         [Fact]
         public void Npc_Should_Subscribe()
         {
-            var o1 = _a.Observe<string>(nameof(S.Name), _log.Add);
-            _a.ToString().Should().Be("a*");
-            var o2 = _a.Observe<string>(nameof(S.Name), _log.Add);
-            _a.ToString().Should().Be("a**");
+            var o1 = _z.Observe<string>(nameof(S.Name), _log.Add);
+            _z.ToString().Should().Be("z*");
+            var o2 = _z.Observe<string>(nameof(S.Name), _log.Add);
+            _z.ToString().Should().Be("z**");
             o1.Dispose();
-            _a.ToString().Should().Be("a*");
+            _z.ToString().Should().Be("z*");
             o2.Dispose();
-            _a.ToString().Should().Be("a");
-        }
-
-        [Fact]
-        public void Observable_Should_Dispose_Both_Npc_And_Source()
-        {
-            var o = _a
-                .Observe<S>(nameof(S.X), s => _log.Add(s.ToString()))
-                .Observe<string>(nameof(S.Name), _log.Add);
-            _a.X = _b;
-            _a.ToString().Should().Be("a*b*");
-            o.Dispose();
-            _a.ToString().Should().Be("ab");
-        }
-
-        [Fact]
-        public void Observable_Value_Should_React_To_Changing_Source()
-        {
-            var chain = Chain(start: 'a', count: 3);
-            var source = new FakeObservable(chain[0]);
-            var observable = new Observable<S>(source, nameof(S.X));
-            observable.Value.ToString().Should().Be("bc");
-            source.Value = chain[1];
-            observable.Value.ToString().Should().Be("c");
+            _z.ToString().Should().Be("z");
         }
         [Fact]
-        public void Observable_Should_Notify_About_Changing_Source()
-        {
-            var chain = Chain(start: 'a', count: 3);
-            var source = new FakeObservable(chain[0]);
-            var observable = new Observable<S>(source, nameof(S.X));
-            observable.Subscribe(s => _log.Add(s.ToString()));
-            source.Value = chain[1];
-            PopLog().Should().Equal("c");
-        }
-        [Fact]
-        public void Observable_Value_Should_React_To_Replacing_Source_Property()
-        {
-            var chain = Chain(start: 'a', count: 3);
-            var observable = new Observable<S>(
-                new FakeObservable(chain[0]), nameof(S.X));
-            observable.Value.ToString().Should().Be("bc");
-            chain[0].X = chain[2];
-            observable.Value.ToString().Should().Be("c");
-        }
-        [Fact]
-        public void Observable_Should_Notify_About_Changing_Source_Property()
-        {
-            var chain = Chain(start: 'a', count: 3);
-            var source = new FakeObservable(chain[0]);
-            var observable = new Observable<S>(source, nameof(S.X));
-            observable.Subscribe(s => _log.Add(s.ToString()));
-            chain[0].X = chain[2];
-            PopLog().Should().Equal("c");
-        }
-
-        [Fact]
-        public void Observables1()
+        public void Long_Chain()
         {
             var chain = Chain(start: 'a', count: 3);
             var observed = chain[0]
