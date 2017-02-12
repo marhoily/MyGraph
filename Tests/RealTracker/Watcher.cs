@@ -1,5 +1,3 @@
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-
 using System;
 using System.ComponentModel;
 
