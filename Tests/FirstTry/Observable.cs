@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Linq.Expressions;
+using FluentAssertions;
+using MyGraph;
+using Xunit;
+using static Tests.NpcSamples;
 
 namespace Tests.FirstTry
 {
@@ -103,6 +108,27 @@ namespace Tests.FirstTry
             var observable = new Observable<T>(source, propertyName);
             if (handler != null) observable.Changed += handler;
             return observable;
+        }
+    }
+    public sealed class TrackPropertyChangedTest
+    {
+        private readonly S _a = new S("a", null);
+        private readonly S _b = new S("b", null);
+        private readonly S _c = new S("c", null);
+        private readonly List<string> _log = new List<string>();
+   
+        [Fact]
+        public void Observables()
+        {
+            _a.X = _b;
+            var observed = _a
+                .Observe<S>(nameof(S.X), _ => _log.Add("1"))
+                .Observe<string>(nameof(S.Name), _ => _log.Add("2"));
+            observed.Value.Should().Be("b");
+            _a.X = _c;
+            observed.Value.Should().Be("c");
+            _log.Should().Equal("1", "2");
+            observed.Dispose();
         }
     }
 }

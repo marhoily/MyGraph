@@ -1,58 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using FluentAssertions;
 using MyGraph;
 using Tests.FirstTry;
 using Xunit;
+using static Tests.NpcSamples;
 
 namespace Tests
 {
     public sealed class TrackPropertyChangedTest
     {
-        sealed class S : INotifyPropertyChanged
-        {
-            public string Name { get; }
-            private S _x;
-            public S X
-            {
-                get { return _x; }
-                set
-                {
-                    if (Equals(value, _x)) return;
-                    _x = value;
-                    OnPropertyChanged();
-                }
-            }
-
-            public S(string name, S x)
-            {
-                _x = x;
-                Name = name;
-            }
-
-            public override string ToString()
-            {
-                return Name + new string(c: '*', count: _handlersList.Count) + X;
-            }
-
-            private readonly List<PropertyChangedEventHandler> _handlersList = new List<PropertyChangedEventHandler>();
-            public event PropertyChangedEventHandler PropertyChanged
-            {
-                add { _handlersList.Add(value); }
-                remove { _handlersList.Remove(value); }
-            }
-
-            private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-            {
-                foreach (var handler in _handlersList)
-                    handler.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
         private readonly S _a = new S("a", null);
         private readonly S _b = new S("b", null);
         private readonly S _c = new S("c", null);
@@ -93,19 +52,6 @@ namespace Tests
             _dispose();
             _a.X = null;
             _log.Should().Equal("a");
-        }
-        [Fact]
-        public void Observables()
-        {
-            _a.X = _b;
-            var observed = _a
-                .Observe<S>(nameof(S.X), _ => _log.Add("1"))
-                .Observe<string>(nameof(S.Name), _ => _log.Add("2"));
-            observed.Value.Should().Be("b");
-            _a.X = _c;
-            observed.Value.Should().Be("c");
-            _log.Should().Equal("1", "2");
-            observed.Dispose();
         }
     }
 }
