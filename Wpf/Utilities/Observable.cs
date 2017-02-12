@@ -192,8 +192,9 @@ namespace MyGraph
             this Expression<Func<ObservableCollection<T>>> exp,
             Action<T> added, Action<T> removed)
         {
+            var npc = typeof(INotifyPropertyChanged);
             var goodPart = exp.ExtractSubexpressions()
-                .SkipWhile(e => !(e.Compile()() is INotifyPropertyChanged))
+                .SkipWhile(e => !npc.IsAssignableFrom(e.Body.Type))
                 .ToList();
             var first = goodPart
                 .Select(e => e.Compile()())
