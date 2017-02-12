@@ -35,38 +35,9 @@ namespace MyGraph
             return prop?.Name;
         }
 
-        struct Access
-        {
-            public INotifyPropertyChanged Trackable { get; }
-            public string PropertyName { get; }
-
-            public Access(INotifyPropertyChanged trackable, string propertyName)
-            {
-                Trackable = trackable;
-                PropertyName = propertyName;
-            }
-        }
         public static Action Track<T>(this Expression<Func<T>> exp, Action<T> onChanged)
         {
-            return Track(GetAccesses(exp), onChanged);
-        }
-
-        private static Action Track<T>(IEnumerable<Access> accesses, Action<T> onChanged)
-        {
-            var first = accesses.FirstOrDefault();
-            if (first.PropertyName == null) return () => { };
-            var trackFirst = first.Trackable.Track(first.PropertyName, onChanged);
-            var trackRest = Track(accesses.Skip(1), onChanged);
-            return () => { trackFirst(); trackRest(); };
-        }
-
-        private static List<Access> GetAccesses<T>(Expression<Func<T>> exp)
-        {
-            var subexpressions = ExtractPath(exp).ToList();
-            return subexpressions.Zip(subexpressions.Skip(1),
-                    (x, y) => new Access(x.Compile()() as INotifyPropertyChanged, y.GetPropertyName()))
-                .Where(x => x.Trackable != null && x.PropertyName != null)
-                .ToList();
+            throw new NotImplementedException();
         }
 
         internal static IEnumerable<Expression<Func<object>>> ExtractPath<T>(Expression<Func<T>> exp)
