@@ -99,8 +99,8 @@ namespace Tests
         {
             _a.X = _b;
             var observed = _a
-                .Observe(nameof(S.X), () => _log.Add("1"))
-                .Observe(nameof(S.Name), () => _log.Add("2"));
+                .Observe<S>(nameof(S.X), () => _log.Add("1"))
+                .Observe<string>(nameof(S.Name), () => _log.Add("2"));
             observed.Value.Should().Be("b");
             _a.X = _c;
             observed.Value.Should().Be("c");

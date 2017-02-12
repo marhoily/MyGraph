@@ -4,18 +4,18 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Tests.FirstTry
 {
-    internal interface IObservable : IDisposable
+    internal interface IObservable<out T> : IDisposable
     {
-        object Value { get; }
+        T Value { get; }
         event Action Changed;
     }
 
     [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
-    internal sealed class Npc : IObservable
+    internal sealed class Npc<T> : IObservable<T>
     {
         private INotifyPropertyChanged _source;
         private readonly string _propertyName;
-        public object Value { get; private set; }
+        public T Value { get; private set; }
         public event Action Changed;
 
         public Npc(string propertyName, INotifyPropertyChanged source = null, Action changeHandler = null)
@@ -61,12 +61,12 @@ namespace Tests.FirstTry
         }
         private void UpdateValue()
         {
-            var value = _source
+            var value = (T)_source
                 .GetType()
                 .GetProperty(_propertyName)
                 .GetValue(_source);
 
-            if (ReferenceEquals(Value, value))
+            if (Equals(Value, value))
                 return;
             Value = value;
             Changed?.Invoke();
@@ -85,24 +85,24 @@ namespace Tests.FirstTry
         }
     }
     [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
-    internal sealed class Observable : IObservable
+    internal sealed class Observable<T> : IObservable<T>
     {
-        private readonly IObservable _source;
-        private readonly Npc _npc;
-        public object Value => _npc.Value;
+        private readonly IObservable<INotifyPropertyChanged> _source;
+        private readonly Npc<T> _npc;
+        public T Value => _npc.Value;
         public event Action Changed;
 
-        public Observable(IObservable source, string propertyName)
+        public Observable(IObservable<INotifyPropertyChanged> source, string propertyName)
         {
             _source = source;
-            _npc = new Npc(propertyName, changeHandler: () => Changed?.Invoke());
+            _npc = new Npc<T>(propertyName, changeHandler: () => Changed?.Invoke());
             _source.Changed += OnSourceChanged;
             OnSourceChanged();
         }
 
         private void OnSourceChanged()
         {
-            _npc.ChangeSource(_source.Value as INotifyPropertyChanged);
+            _npc.ChangeSource(_source.Value);
         }
 
         public void Dispose()
@@ -121,14 +121,13 @@ namespace Tests.FirstTry
 
     internal static class Ext
     {
-        public static IObservable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
+        public static IObservable<T> Observe<T>(this INotifyPropertyChanged source, string propertyName, Action handler = null)
         {
-            var observable = new Npc(propertyName, source, handler);
-            return observable;
+            return new Npc<T>(propertyName, source, handler);
         }
-        public static IObservable Observe(this IObservable source, string propertyName, Action handler = null)
+        public static IObservable<T> Observe<T>(this IObservable<INotifyPropertyChanged> source, string propertyName, Action handler = null)
         {
-            var observable = new Observable(source, propertyName);
+            var observable = new Observable<T>(source, propertyName);
             if (handler != null) observable.Changed += handler;
             return observable;
         }
