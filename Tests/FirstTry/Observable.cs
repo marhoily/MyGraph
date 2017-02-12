@@ -95,24 +95,14 @@ namespace Tests.FirstTry
         public Observable(IObservable source, string propertyName)
         {
             _source = source;
-            _npc = new Npc(propertyName, changeHandler: UpdateValue);
+            _npc = new Npc(propertyName, changeHandler: () => Changed?.Invoke());
             _source.Changed += OnSourceChanged;
             OnSourceChanged();
         }
 
-        private void ChangeSource(INotifyPropertyChanged source)
-        {
-            _npc.ChangeSource(source);
-        }
-
         private void OnSourceChanged()
         {
-            ChangeSource(_source.Value as INotifyPropertyChanged);
-        }
-
-        private void UpdateValue()
-        {
-            Changed?.Invoke();
+            _npc.ChangeSource(_source.Value as INotifyPropertyChanged);
         }
 
         public void Dispose()
