@@ -30,7 +30,7 @@ namespace Tests
         private readonly Action _dispose;
 
         private Action TrackSample(Action<int> added, Action<int> removed) =>
-            MyGraph.ExpressionExtensions.Track(() => _sample.Collection, added, removed);
+            MyGraph.MyExpressionExtensions.Track(() => _sample.Collection, added, removed);
 
         public TrackCollectionChangedTest()
         {

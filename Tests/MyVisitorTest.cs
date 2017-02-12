@@ -19,7 +19,7 @@ namespace Tests
 
         private static List<Expression<Func<object>>> Check(Expression<Func<S>> exp)
         {
-            return ExpressionExtensions.ExtractPath(exp).ToList();
+            return MyExpressionExtensions.ExtractPath(exp).ToList();
         }
 
         [Fact]

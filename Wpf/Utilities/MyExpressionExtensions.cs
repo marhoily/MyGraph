@@ -10,7 +10,7 @@ using JetBrains.Annotations;
 
 namespace MyGraph
 {
-    public static class ExpressionExtensions
+    public static class MyExpressionExtensions
     {
         public static Action Track<T>(this INotifyPropertyChanged trackable, string propertyName, Action<T> onChanged)
         {
