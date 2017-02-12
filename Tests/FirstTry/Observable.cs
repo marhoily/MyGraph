@@ -3,12 +3,12 @@
 using System;
 using System.ComponentModel;
 
-namespace Tests
+namespace Tests.FirstTry
 {
     internal sealed class Observable : IDisposable
     {
-        private INotifyPropertyChanged _constantPremise;
         private readonly Observable _premiseSource;
+        private INotifyPropertyChanged _premise;
         private readonly string _propertyName;
         public object Fact { get; private set; }
         public event Action FactChanged; 
@@ -28,21 +28,21 @@ namespace Tests
 
         private void ChangePremise(INotifyPropertyChanged premise)
         {
-            if (ReferenceEquals(_constantPremise, premise))
+            if (ReferenceEquals(_premise, premise))
                 return;
-            if (_constantPremise != null)
+            if (_premise != null)
             {
-                _constantPremise.PropertyChanged -= OnPropertyChanged;
+                _premise.PropertyChanged -= OnPropertyChanged;
             }
             else
             {
                 1.ToString();
             }
-            _constantPremise = premise;
-            if (_constantPremise != null)
+            _premise = premise;
+            if (_premise != null)
             {
                 UpdateValue();
-                _constantPremise.PropertyChanged += OnPropertyChanged;
+                _premise.PropertyChanged += OnPropertyChanged;
             }
             else
             {
@@ -66,10 +66,10 @@ namespace Tests
         }
         private void UpdateValue()
         {
-            var value = _constantPremise
+            var value = _premise
                 .GetType()
                 .GetProperty(_propertyName)
-                .GetValue(_constantPremise);
+                .GetValue(_premise);
 
             if (ReferenceEquals(Fact, value))
                 return;
@@ -79,9 +79,9 @@ namespace Tests
 
         public void Dispose()
         {
-            if (_constantPremise != null)
+            if (_premise != null)
             {
-                _constantPremise.PropertyChanged -= OnPropertyChanged;
+                _premise.PropertyChanged -= OnPropertyChanged;
             }
             else
             {

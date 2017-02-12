@@ -68,9 +68,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SecondTry\Observable.cs" />
     <Compile Include="GetPropertyNamesTest.cs" />
     <Compile Include="MyVisitorTest.cs" />
-    <Compile Include="Observable.cs" />
+    <Compile Include="FirstTry\Observable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TrackCollectionChangedTest.cs" />
     <Compile Include="TrackPropertyChangedTest.cs" />
