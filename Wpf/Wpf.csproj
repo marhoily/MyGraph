@@ -93,6 +93,7 @@
     <Compile Include="TestImplementation\Vertex.cs" />
     <Compile Include="Control\Plot.cs" />
     <Compile Include="Utilities\MyExpressionExtensions.cs" />
+    <Compile Include="Utilities\Observable.cs" />
     <Compile Include="Utilities\PlotExtensions.cs" />
     <Compile Include="RootViewModel.cs" />
     <Compile Include="App.xaml.cs">
