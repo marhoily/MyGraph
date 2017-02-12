@@ -2,6 +2,7 @@
 
 using System;
 using System.ComponentModel;
+using MyGraph;
 
 namespace Tests.SecondTry
 {
@@ -11,6 +12,7 @@ namespace Tests.SecondTry
         private INotifyPropertyChanged _premise;
         private readonly string _propertyName;
         public object Fact { get; private set; }
+        private Action _disposePremiseTracking;
         public event Action FactChanged;
 
         public Observable(INotifyPropertyChanged premise, string propertyName)
@@ -32,7 +34,8 @@ namespace Tests.SecondTry
                 return;
             if (_premise != null)
             {
-                _premise.PropertyChanged -= OnPropertyChanged;
+                _disposePremiseTracking?.Invoke();
+                _disposePremiseTracking = null;
             }
             else
             {
@@ -42,7 +45,7 @@ namespace Tests.SecondTry
             if (_premise != null)
             {
                 UpdateValue();
-                _premise.PropertyChanged += OnPropertyChanged;
+                _disposePremiseTracking = _premise.Track(_propertyName, UpdateValue);
             }
             else
             {
@@ -53,17 +56,7 @@ namespace Tests.SecondTry
         {
             ChangePremise(_premiseSource.Fact as INotifyPropertyChanged);
         }
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == _propertyName)
-            {
-                UpdateValue();
-            }
-            else
-            {
-                1.ToString();
-            }
-        }
+        
         private void UpdateValue()
         {
             var value = _premise
@@ -79,14 +72,7 @@ namespace Tests.SecondTry
 
         public void Dispose()
         {
-            if (_premise != null)
-            {
-                _premise.PropertyChanged -= OnPropertyChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
+            _disposePremiseTracking?.Invoke();
             if (_premiseSource != null)
             {
                 _premiseSource.FactChanged -= OnPremiseChanged;

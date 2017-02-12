@@ -22,6 +22,11 @@ namespace MyGraph
             trackable.PropertyChanged += handler;
             return () => trackable.PropertyChanged -= handler;
         }
+        public static Action Track(this INotifyPropertyChanged trackable, string propertyName, Action onChanged)
+        {
+
+            return trackable.Track<object>(propertyName, _ => onChanged());
+        }
 
         public static string GetPropertyName(this Expression<Func<object>> exp)
         {
