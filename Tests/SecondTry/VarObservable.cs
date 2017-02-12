@@ -2,23 +2,24 @@
 
 using System;
 using System.ComponentModel;
+using JetBrains.Annotations;
 
 namespace Tests.SecondTry
 {
-    internal sealed class Observable : IDisposable
+    internal interface IObservable : IDisposable
     {
-        private readonly Observable _premiseSource;
+        object Fact { get; }
+        event Action FactChanged;
+    }
+    internal sealed class VarObservable : IObservable
+    {
+        private readonly IObservable _premiseSource;
         private INotifyPropertyChanged _premise;
         private readonly string _propertyName;
         public object Fact { get; private set; }
-        public event Action FactChanged; 
+        public event Action FactChanged;
 
-        public Observable(INotifyPropertyChanged premise, string propertyName)
-        {
-            _propertyName = propertyName;
-            ChangePremise(premise);
-        }
-        public Observable(Observable premiseSource, string propertyName)
+        public VarObservable(IObservable premiseSource, string propertyName)
         {
             _premiseSource = premiseSource;
             _propertyName = propertyName;
@@ -97,17 +98,58 @@ namespace Tests.SecondTry
             }
         }
     }
+    internal sealed class ConstObservable : IObservable
+    {
+        private readonly INotifyPropertyChanged _premise;
+        private readonly string _propertyName;
+
+        public object Fact => _premise
+            .GetType()
+            .GetProperty(_propertyName)
+            .GetValue(_premise);
+        public event Action FactChanged;
+
+        public ConstObservable([NotNull]INotifyPropertyChanged premise, string propertyName)
+        {
+            _propertyName = propertyName;
+            _premise = premise;
+            _premise.PropertyChanged += OnPropertyChanged;
+        }
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == _propertyName)
+            {
+                FactChanged?.Invoke();
+            }
+            else
+            {
+                1.ToString();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_premise != null)
+            {
+                _premise.PropertyChanged -= OnPropertyChanged;
+            }
+            else
+            {
+                1.ToString();
+            }
+        }
+    }
     internal static class Ext
     {
-        public static Observable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
+        public static IObservable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
         {
-            var observable = new Observable(source, propertyName);
+            var observable = new ConstObservable(source, propertyName);
             if (handler != null) observable.FactChanged += handler;
             return observable;
         }
-        public static Observable Observe(this Observable source, string propertyName, Action handler = null)
+        public static IObservable Observe(this IObservable source, string propertyName, Action handler = null)
         {
-            var observable = new Observable(source, propertyName);
+            var observable = new VarObservable(source, propertyName);
             if (handler != null) observable.FactChanged += handler;
             return observable;
         }
