@@ -11,7 +11,6 @@ namespace Tests.FirstTry
         event Action<T> Changed;
     }
 
-    [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
     internal sealed class Npc<T> : IObservable<T>
     {
         private INotifyPropertyChanged _source;
@@ -39,31 +38,17 @@ namespace Tests.FirstTry
             {
                 _source.PropertyChanged -= OnPropertyChanged;
             }
-            else
-            {
-                1.ToString();
-            }
             _source = source;
             if (_source != null)
             {
                 UpdateValue();
                 _source.PropertyChanged += OnPropertyChanged;
             }
-            else
-            {
-                1.ToString();
-            }
         }
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == _propertyName)
-            {
                 UpdateValue();
-            }
-            else
-            {
-                1.ToString();
-            }
         }
         private void UpdateValue()
         {
@@ -81,16 +66,9 @@ namespace Tests.FirstTry
         public void Dispose()
         {
             if (_source != null)
-            {
                 _source.PropertyChanged -= OnPropertyChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
         }
     }
-    [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
     internal sealed class Observable<T> : IObservable<T>
     {
         private readonly IObservable<INotifyPropertyChanged> _source;
@@ -110,13 +88,7 @@ namespace Tests.FirstTry
         {
             _npc.Dispose();
             if (_source != null)
-            {
                 _source.Changed -= _npc.ChangeSource;
-            }
-            else
-            {
-                1.ToString();
-            }
         }
     }
 
