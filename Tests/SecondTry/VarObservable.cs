@@ -2,7 +2,6 @@
 
 using System;
 using System.ComponentModel;
-using JetBrains.Annotations;
 using Tests.RealTracker;
 
 namespace Tests.SecondTry
@@ -58,25 +57,13 @@ namespace Tests.SecondTry
             }
         }
     }
-    internal sealed class ConstObservable : IObservable
-    {
-        private readonly Npc _npc;
-        public object Value => _npc.Value;
-        public event Action Changed;
-
-        public ConstObservable([NotNull]INotifyPropertyChanged premise, string propertyName)
-        {
-            _npc = new Npc(propertyName, () => Changed?.Invoke());
-            _npc.ChangeSource(premise);
-        }
-        public void Dispose() => _npc.Dispose();
-    }
+    
     internal static class Ext
     {
         public static IObservable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
         {
-            var observable = new ConstObservable(source, propertyName);
-            if (handler != null) observable.Changed += handler;
+            var observable = new Npc(propertyName, handler);
+            observable.ChangeSource(source);
             return observable;
         }
         public static IObservable Observe(this IObservable source, string propertyName, Action handler = null)
