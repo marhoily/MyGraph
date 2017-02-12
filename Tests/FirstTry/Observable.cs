@@ -85,45 +85,42 @@ namespace Tests.FirstTry
         }
     }
     [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
-    internal sealed class Compound : IObservable
+    internal sealed class Observable : IObservable
     {
-        private readonly IObservable _premiseSource;
+        private readonly IObservable _source;
         private readonly Npc _npc;
-        public object Value { get; private set; }
+        public object Value => _npc.Value;
         public event Action Changed;
 
-        public Compound(IObservable premiseSource, string propertyName)
+        public Observable(IObservable source, string propertyName)
         {
-            _premiseSource = premiseSource;
+            _source = source;
             _npc = new Npc(propertyName, changeHandler: UpdateValue);
-            _premiseSource.Changed += OnPremiseChanged;
-            OnPremiseChanged();
+            _source.Changed += OnSourceChanged;
+            OnSourceChanged();
         }
 
-        private void ChangePremise(INotifyPropertyChanged premise)
+        private void ChangeSource(INotifyPropertyChanged source)
         {
-            _npc.ChangeSource(premise);
+            _npc.ChangeSource(source);
         }
 
-        private void OnPremiseChanged()
+        private void OnSourceChanged()
         {
-            ChangePremise(_premiseSource.Value as INotifyPropertyChanged);
+            ChangeSource(_source.Value as INotifyPropertyChanged);
         }
 
         private void UpdateValue()
         {
-            if (ReferenceEquals(Value, _npc.Value))
-                return;
-            Value = _npc.Value;
             Changed?.Invoke();
         }
 
         public void Dispose()
         {
             _npc.Dispose();
-            if (_premiseSource != null)
+            if (_source != null)
             {
-                _premiseSource.Changed -= OnPremiseChanged;
+                _source.Changed -= OnSourceChanged;
             }
             else
             {
@@ -141,7 +138,7 @@ namespace Tests.FirstTry
         }
         public static IObservable Observe(this IObservable source, string propertyName, Action handler = null)
         {
-            var observable = new Compound(source, propertyName);
+            var observable = new Observable(source, propertyName);
             if (handler != null) observable.Changed += handler;
             return observable;
         }
