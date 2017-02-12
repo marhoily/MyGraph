@@ -1,21 +1,22 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using Tests.SecondTry;
 
 namespace Tests.RealTracker
 {
     [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
-    internal sealed class Npc : IDisposable
+    internal sealed class Npc : IObservable
     {
         private INotifyPropertyChanged _source;
         private readonly string _propertyName;
-        private readonly Action _changeHandler;
+        public event Action Changed;
         public object Value { get; private set; }
 
         public Npc(string propertyName, Action changeHandler)
         {
             _propertyName = propertyName;
-            _changeHandler = changeHandler;
+            Changed = changeHandler;
         }
 
         public void ChangeSource(INotifyPropertyChanged source)
@@ -62,7 +63,7 @@ namespace Tests.RealTracker
             if (ReferenceEquals(Value, value))
                 return;
             Value = value;
-            _changeHandler?.Invoke();
+            Changed?.Invoke();
         }
 
         public void Dispose()

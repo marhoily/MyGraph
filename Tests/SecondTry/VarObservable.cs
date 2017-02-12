@@ -9,21 +9,21 @@ namespace Tests.SecondTry
 {
     internal interface IObservable : IDisposable
     {
-        object Fact { get; }
-        event Action FactChanged;
+        object Value { get; }
+        event Action Changed;
     }
     internal sealed class VarObservable : IObservable
     {
         private readonly IObservable _premiseSource;
         private readonly Npc _npc;
-        public object Fact { get; private set; }
-        public event Action FactChanged;
+        public object Value { get; private set; }
+        public event Action Changed;
         
         public VarObservable(IObservable premiseSource, string propertyName)
         {
             _premiseSource = premiseSource;
             _npc = new Npc(propertyName, UpdateValue);
-            _premiseSource.FactChanged += OnPremiseChanged;
+            _premiseSource.Changed += OnPremiseChanged;
             OnPremiseChanged();
         }
 
@@ -34,15 +34,15 @@ namespace Tests.SecondTry
 
         private void OnPremiseChanged()
         {
-            ChangePremise(_premiseSource.Fact as INotifyPropertyChanged);
+            ChangePremise(_premiseSource.Value as INotifyPropertyChanged);
         }
 
         private void UpdateValue()
         {
-            if (ReferenceEquals(Fact, _npc.Value))
+            if (ReferenceEquals(Value, _npc.Value))
                 return;
-            Fact = _npc.Value;
-            FactChanged?.Invoke();
+            Value = _npc.Value;
+            Changed?.Invoke();
         }
 
         public void Dispose()
@@ -50,7 +50,7 @@ namespace Tests.SecondTry
             _npc.Dispose();
             if (_premiseSource != null)
             {
-                _premiseSource.FactChanged -= OnPremiseChanged;
+                _premiseSource.Changed -= OnPremiseChanged;
             }
             else
             {
@@ -61,12 +61,12 @@ namespace Tests.SecondTry
     internal sealed class ConstObservable : IObservable
     {
         private readonly Npc _npc;
-        public object Fact => _npc.Value;
-        public event Action FactChanged;
+        public object Value => _npc.Value;
+        public event Action Changed;
 
         public ConstObservable([NotNull]INotifyPropertyChanged premise, string propertyName)
         {
-            _npc = new Npc(propertyName, () => FactChanged?.Invoke());
+            _npc = new Npc(propertyName, () => Changed?.Invoke());
             _npc.ChangeSource(premise);
         }
         public void Dispose() => _npc.Dispose();
@@ -76,13 +76,13 @@ namespace Tests.SecondTry
         public static IObservable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
         {
             var observable = new ConstObservable(source, propertyName);
-            if (handler != null) observable.FactChanged += handler;
+            if (handler != null) observable.Changed += handler;
             return observable;
         }
         public static IObservable Observe(this IObservable source, string propertyName, Action handler = null)
         {
             var observable = new VarObservable(source, propertyName);
-            if (handler != null) observable.FactChanged += handler;
+            if (handler != null) observable.Changed += handler;
             return observable;
         }
     }
