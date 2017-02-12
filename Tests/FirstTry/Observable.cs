@@ -24,7 +24,8 @@ namespace Tests.FirstTry
         {
             _propertyName = propertyName;
             ChangeSource(source);
-            if (changeHandler != null) _changed.Add(changeHandler);
+            if (changeHandler != null)
+                _changed.Add(changeHandler);
         }
 
         public T Value { get; private set; }
@@ -39,9 +40,9 @@ namespace Tests.FirstTry
                 _source.PropertyChanged -= OnPropertyChanged;
             }
             _source = source;
+            UpdateValue();
             if (_source != null)
             {
-                UpdateValue();
                 _source.PropertyChanged += OnPropertyChanged;
             }
         }
@@ -53,7 +54,7 @@ namespace Tests.FirstTry
         }
         private void UpdateValue()
         {
-            var value = (T)_source
+            var value = (T)_source?
                 .GetType()
                 .GetProperty(_propertyName)
                 .GetValue(_source);
@@ -228,7 +229,7 @@ namespace Tests.FirstTry
             PopLog().Should().Equal("c");
         }
 
-        // [Fact]
+        [Fact]
         public void Observables1()
         {
             var chain = Chain(start: 'a', count: 3);
@@ -241,12 +242,23 @@ namespace Tests.FirstTry
             chain[2].X = _z;
             observed.Value.Should().Be(_z);
             PopLog().Should().Equal("3");
+            chain[0].ToString().Should().Be("a*b*c*z");
 
             chain[1].X = null;
+            chain[0].ToString().Should().Be("a*b*");
             observed.Value.Should().Be(null);
-            PopLog().Should().Equal("2");
+            PopLog().Should().Equal("2", "3");
 
+            var replacement = Chain(start: 'd', count: 3);
+            chain[0].X = replacement[0]; 
+            observed.Value.ToString().Should().Be("f");
+            PopLog().Should().Equal("1",  "2", "3");
+
+            chain.Select(i => i.ToString()).Should().Equal("a*d*e*f", "b", "cz");
+            replacement.Select(i => i.ToString()).Should().Equal("d*e*f", "e*f", "f");
             observed.Dispose();
+            chain.Select(i => i.ToString()).Should().Equal("adef", "b", "cz");
+            replacement.Select(i => i.ToString()).Should().Equal("def", "ef", "f");
         }
     }
 }
