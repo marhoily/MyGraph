@@ -9,30 +9,34 @@ namespace Tests.FirstTry
     {
         private readonly Observable _premiseSource;
         private INotifyPropertyChanged _premise;
+        public object Conclusion { get; private set; }
+        public event Action ConclusionChanged;
         private readonly string _propertyName;
-        public object Fact { get; private set; }
-        public event Action FactChanged; 
 
         public Observable(INotifyPropertyChanged premise, string propertyName)
         {
             _propertyName = propertyName;
-            ChangePremise(premise);
+            UpdatePremise(premise);
         }
         public Observable(Observable premiseSource, string propertyName)
         {
             _premiseSource = premiseSource;
             _propertyName = propertyName;
-            _premiseSource.FactChanged += OnPremiseChanged;
-            OnPremiseChanged();
+            _premiseSource.ConclusionChanged += WhenPremiseChanged;
+            UpdatePremise(_premiseSource.Conclusion as INotifyPropertyChanged);
         }
 
-        private void ChangePremise(INotifyPropertyChanged premise)
+        private void WhenPremiseChanged()
+        {
+            UpdatePremise(_premiseSource.Conclusion as INotifyPropertyChanged);
+        }
+        private void UpdatePremise(INotifyPropertyChanged premise)
         {
             if (ReferenceEquals(_premise, premise))
                 return;
             if (_premise != null)
             {
-                _premise.PropertyChanged -= OnPropertyChanged;
+                _premise.PropertyChanged -= WhenConclusionChanged;
             }
             else
             {
@@ -41,47 +45,43 @@ namespace Tests.FirstTry
             _premise = premise;
             if (_premise != null)
             {
-                UpdateValue();
-                _premise.PropertyChanged += OnPropertyChanged;
+                UpdateConclusion();
+                _premise.PropertyChanged += WhenConclusionChanged;
             }
             else
             {
                 1.ToString();
             }
         }
-        private void OnPremiseChanged()
-        {
-            ChangePremise(_premiseSource.Fact as INotifyPropertyChanged);
-        }
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void WhenConclusionChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == _propertyName)
             {
-                UpdateValue();
+                UpdateConclusion();
             }
             else
             {
                 1.ToString();
             }
         }
-        private void UpdateValue()
+        private void UpdateConclusion()
         {
             var value = _premise
                 .GetType()
                 .GetProperty(_propertyName)
                 .GetValue(_premise);
 
-            if (ReferenceEquals(Fact, value))
+            if (ReferenceEquals(Conclusion, value))
                 return;
-            Fact = value;
-            FactChanged?.Invoke();
+            Conclusion = value;
+            ConclusionChanged?.Invoke();
         }
 
         public void Dispose()
         {
             if (_premise != null)
             {
-                _premise.PropertyChanged -= OnPropertyChanged;
+                _premise.PropertyChanged -= WhenConclusionChanged;
             }
             else
             {
@@ -89,7 +89,7 @@ namespace Tests.FirstTry
             }
             if (_premiseSource != null)
             {
-                _premiseSource.FactChanged -= OnPremiseChanged;
+                _premiseSource.ConclusionChanged -= WhenPremiseChanged;
             }
             else
             {
@@ -102,13 +102,13 @@ namespace Tests.FirstTry
         public static Observable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
         {
             var observable = new Observable(source, propertyName);
-            if (handler != null) observable.FactChanged += handler;
+            if (handler != null) observable.ConclusionChanged += handler;
             return observable;
         }
         public static Observable Observe(this Observable source, string propertyName, Action handler = null)
         {
             var observable = new Observable(source, propertyName);
-            if (handler != null) observable.FactChanged += handler;
+            if (handler != null) observable.ConclusionChanged += handler;
             return observable;
         }
     }

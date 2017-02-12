@@ -6,12 +6,11 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using FluentAssertions;
 using MyGraph;
-using Tests.WithWatcher;
+using Tests.FirstTry;
 using Xunit;
 
 namespace Tests
 {
-
     public sealed class TrackPropertyChangedTest
     {
         sealed class S : INotifyPropertyChanged
@@ -102,9 +101,9 @@ namespace Tests
             var observed = _a
                 .Observe(nameof(S.X), () => _log.Add("1"))
                 .Observe(nameof(S.Name), () => _log.Add("2"));
-            observed.Fact.Should().Be("b");
+            observed.Conclusion.Should().Be("b");
             _a.X = _c;
-            observed.Fact.Should().Be("c");
+            observed.Conclusion.Should().Be("c");
             _log.Should().Equal("1", "2");
         }
     }
