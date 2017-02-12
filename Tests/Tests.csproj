@@ -72,7 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="RealTracker\Watcher.cs" />
+    <Compile Include="RealTracker\Npc.cs" />
     <Compile Include="SecondTry\VarObservable.cs" />
     <Compile Include="WithWatcher\Observable.cs" />
     <Compile Include="GetPropertyNamesTest.cs" />
