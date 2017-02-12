@@ -74,6 +74,65 @@ namespace MyGraph
         }
     }
 
+    public sealed class CollectionObserver<T> : IDisposable
+    {
+        private readonly IObservable<ObservableCollection<T>> _collectionSource;
+        private ObservableCollection<T> _collection;
+        private readonly Action<T> _added;
+        private readonly Action<T> _removed;
+
+        public CollectionObserver(
+            IObservable<ObservableCollection<T>> collectionSource,
+            Action<T> added, Action<T> removed)
+        {
+            _collectionSource = collectionSource;
+            _added = added;
+            _removed = removed;
+            UpdateCollection(collectionSource.Value);
+            collectionSource.Subscribe(UpdateCollection);
+        }
+
+        private void UpdateCollection(ObservableCollection<T> collection)
+        {
+            if (_collection != null)
+            {
+                _collection.CollectionChanged -= Handler;
+                foreach (var item in _collection)
+                    _removed(item);
+            }
+            _collection = collection;
+            if (_collection != null)
+            {
+                _collection.CollectionChanged += Handler;
+                foreach (var item in _collection)
+                    _added(item);
+            }
+        }
+        private void Handler(object s, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case Add:
+                    foreach (T item in e.NewItems)
+                        _added(item);
+                    break;
+                case Remove:
+                    foreach (T item in e.OldItems)
+                        _removed(item);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void Dispose()
+        {
+            _collectionSource.Dispose();
+            if (_collection != null)
+                _collection.CollectionChanged -= Handler;
+        }
+    }
+
     public static class NpcExtensions
     {
         public static Action Track<T>(this INotifyPropertyChanged trackable, string propertyName, Action<T> onChanged)
@@ -87,23 +146,27 @@ namespace MyGraph
             return () => trackable.PropertyChanged -= handler;
         }
 
-        public static IObservable<TResult> Observe<TSource, TResult>(this TSource source,
-            Expression<Func<TSource, TResult>> pathExpression, Action<TResult> handler)
-            where TSource : INotifyPropertyChanged
+        public static IObservable<TResult> Track<TResult>(this INotifyPropertyChanged source, Expression<Func<TResult>> pathExpression)
         {
-            return source.Observe(handler, pathExpression
+            return source.Track<TResult>(pathExpression
                 .ExtractPropertyNames().Skip(count: 1).ToArray());
         }
-        public static IObservable<T> Observe<T>(
-            this INotifyPropertyChanged source, Action<T> handler, params string[] path)
+        public static IObservable<TResult> Track<TSource, TResult>(this TSource source, Expression<Func<TSource, TResult>> pathExpression)
+            where TSource : INotifyPropertyChanged
+        {
+            return source.Track<TResult>(pathExpression
+                .ExtractPropertyNames().Skip(count: 1).ToArray());
+        }
+        public static IObservable<T> Track<T>(
+            this INotifyPropertyChanged source, params string[] path)
         {
             if (path.Length == 0) throw new ArgumentOutOfRangeException(nameof(path));
-            if (path.Length == 1) return source.Observe(path.Single(), handler);
+            if (path.Length == 1) return source.Observe<T>(path.Single());
             var first = source.Observe<INotifyPropertyChanged>(path.First());
             var middle = path.Skip(count: 1).Take(path.Length - 2);
             return middle.Aggregate(first, (current, part) 
                     => current.Observe<INotifyPropertyChanged>(part))
-                .Observe(path.Last(), handler);
+                .Observe<T>(path.Last());
         }
         public static IObservable<T> Observe<T>(this INotifyPropertyChanged source, string propertyName, Action<T> handler = null)
         {
@@ -129,29 +192,23 @@ namespace MyGraph
             this Expression<Func<ObservableCollection<T>>> exp,
             Action<T> added, Action<T> removed)
         {
-            var getCollection = exp.Compile();
-            var collection = getCollection();
-            NotifyCollectionChangedEventHandler handler = (s, e) =>
-            {
-                switch (e.Action)
-                {
-                    case Add:
-                        foreach (T item in e.NewItems)
-                            added(item);
-                        break;
-                    case Remove:
-                        foreach (T item in e.OldItems)
-                            removed(item);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            };
-            collection.CollectionChanged += handler;
-            foreach (var item in collection)
-                added(item);
+            var goodPart = exp.ExtractSubexpressions()
+                .SkipWhile(e => !(e.Compile()() is INotifyPropertyChanged))
+                .ToList();
+            var first = goodPart
+                .Select(e => e.Compile()())
+                .OfType<INotifyPropertyChanged> ()
+                .First();
+            var observable = first.Track<ObservableCollection<T>>(
+                goodPart.Select(e => e.GetPropertyName()).Skip(1).ToArray());
+            return observable.Track(added, removed).Dispose;
+        }
 
-            return () => collection.CollectionChanged -= handler;
+        public static CollectionObserver<T> Track<T>(
+            this IObservable<ObservableCollection<T>> collectionSource,
+            Action<T> added, Action<T> removed)
+        {
+            return new CollectionObserver<T>(collectionSource, added, removed);
         }
     }
 }

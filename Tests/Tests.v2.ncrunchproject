@@ -24,9 +24,4 @@
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
   <MSTestThreadApartmentState>STA</MSTestThreadApartmentState>
   <BuildProcessArchitecture>x86</BuildProcessArchitecture>
-  <IgnoredTests>
-    <NamedTestSelector>
-      <TestName>Tests.TrackCollectionChangedTest.Property_Change_Should_Log</TestName>
-    </NamedTestSelector>
-  </IgnoredTests>
 </ProjectConfiguration>

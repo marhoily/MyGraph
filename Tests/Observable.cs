@@ -48,8 +48,8 @@ namespace Tests
         public void Long_Chain()
         {
             var chain = Chain(start: 'a', count: 3);
-            var observed = chain[0].Observe(
-                s => s.X.X.X, s => _log.Add(s?.ToString()??"<null>"));
+            var observed = chain[0].Track(s => s.X.X.X);
+            observed.Subscribe(s => _log.Add(s?.ToString() ?? "<null>"));
             observed.Value.Should().Be(null);
 
             chain[2].X = _z;

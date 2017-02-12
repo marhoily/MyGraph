@@ -70,7 +70,7 @@ namespace Tests
         public void Property_Change_Should_Log()
         {
             _sample.Collection = new ObservableCollection<int> { 7 };
-            _log.Should().Equal("Removed: 1", "Removed: 2", "Removed: 3", "Addded: 7");
+            _log.Should().Equal("Removed: 1", "Removed: 2", "Removed: 3", "Added: 7");
         }
     }
 }
