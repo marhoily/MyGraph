@@ -3,6 +3,7 @@
 using System;
 using System.ComponentModel;
 using JetBrains.Annotations;
+using Tests.RealTracker;
 
 namespace Tests.SecondTry
 {
@@ -14,80 +15,39 @@ namespace Tests.SecondTry
     internal sealed class VarObservable : IObservable
     {
         private readonly IObservable _premiseSource;
-        private INotifyPropertyChanged _premise;
-        private readonly string _propertyName;
+        private readonly Npc _npc;
         public object Fact { get; private set; }
         public event Action FactChanged;
-
+        
         public VarObservable(IObservable premiseSource, string propertyName)
         {
             _premiseSource = premiseSource;
-            _propertyName = propertyName;
+            _npc = new Npc(propertyName, UpdateValue);
             _premiseSource.FactChanged += OnPremiseChanged;
             OnPremiseChanged();
         }
 
         private void ChangePremise(INotifyPropertyChanged premise)
         {
-            if (ReferenceEquals(_premise, premise))
-                return;
-            if (_premise != null)
-            {
-                _premise.PropertyChanged -= OnPropertyChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
-            _premise = premise;
-            if (_premise != null)
-            {
-                UpdateValue();
-                _premise.PropertyChanged += OnPropertyChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
+            _npc.ChangeSource(premise);
         }
+
         private void OnPremiseChanged()
         {
             ChangePremise(_premiseSource.Fact as INotifyPropertyChanged);
         }
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == _propertyName)
-            {
-                UpdateValue();
-            }
-            else
-            {
-                1.ToString();
-            }
-        }
+
         private void UpdateValue()
         {
-            var value = _premise
-                .GetType()
-                .GetProperty(_propertyName)
-                .GetValue(_premise);
-
-            if (ReferenceEquals(Fact, value))
+            if (ReferenceEquals(Fact, _npc.Value))
                 return;
-            Fact = value;
+            Fact = _npc.Value;
             FactChanged?.Invoke();
         }
 
         public void Dispose()
         {
-            if (_premise != null)
-            {
-                _premise.PropertyChanged -= OnPropertyChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
+            _npc.Dispose();
             if (_premiseSource != null)
             {
                 _premiseSource.FactChanged -= OnPremiseChanged;
@@ -100,44 +60,16 @@ namespace Tests.SecondTry
     }
     internal sealed class ConstObservable : IObservable
     {
-        private readonly INotifyPropertyChanged _premise;
-        private readonly string _propertyName;
-
-        public object Fact => _premise
-            .GetType()
-            .GetProperty(_propertyName)
-            .GetValue(_premise);
+        private readonly Npc _npc;
+        public object Fact => _npc.Value;
         public event Action FactChanged;
 
         public ConstObservable([NotNull]INotifyPropertyChanged premise, string propertyName)
         {
-            _propertyName = propertyName;
-            _premise = premise;
-            _premise.PropertyChanged += OnPropertyChanged;
+            _npc = new Npc(propertyName, () => FactChanged?.Invoke());
+            _npc.ChangeSource(premise);
         }
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == _propertyName)
-            {
-                FactChanged?.Invoke();
-            }
-            else
-            {
-                1.ToString();
-            }
-        }
-
-        public void Dispose()
-        {
-            if (_premise != null)
-            {
-                _premise.PropertyChanged -= OnPropertyChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
-        }
+        public void Dispose() => _npc.Dispose();
     }
     internal static class Ext
     {
