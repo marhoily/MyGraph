@@ -101,9 +101,9 @@ namespace Tests
             var observed = _a
                 .Observe(nameof(S.X), () => _log.Add("1"))
                 .Observe(nameof(S.Name), () => _log.Add("2"));
-            observed.Conclusion.Should().Be("b");
+            observed.Value.Should().Be("b");
             _a.X = _c;
-            observed.Conclusion.Should().Be("c");
+            observed.Value.Should().Be("c");
             _log.Should().Equal("1", "2");
         }
     }

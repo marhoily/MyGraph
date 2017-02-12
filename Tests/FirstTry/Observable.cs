@@ -1,95 +1,82 @@
-// ReSharper disable ReturnValueOfPureMethodIsNotUsed
-
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Tests.FirstTry
 {
-    internal sealed class Observable : IDisposable
+    internal interface IObservable : IDisposable
     {
-        private readonly Observable _premiseSource;
-        private INotifyPropertyChanged _premise;
-        public object Conclusion { get; private set; }
-        public event Action ConclusionChanged;
+        object Value { get; }
+        event Action Changed;
+    }
+
+    [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
+    internal sealed class Npc : IObservable
+    {
+        private INotifyPropertyChanged _source;
         private readonly string _propertyName;
+        public object Value { get; private set; }
+        public event Action Changed;
 
-        public Observable(INotifyPropertyChanged premise, string propertyName)
+        public Npc(string propertyName, INotifyPropertyChanged source = null, Action changeHandler = null)
         {
             _propertyName = propertyName;
-            UpdatePremise(premise);
-        }
-        public Observable(Observable premiseSource, string propertyName)
-        {
-            _premiseSource = premiseSource;
-            _propertyName = propertyName;
-            _premiseSource.ConclusionChanged += WhenPremiseChanged;
-            UpdatePremise(_premiseSource.Conclusion as INotifyPropertyChanged);
+            ChangeSource(source);
+            Changed = changeHandler;
         }
 
-        private void WhenPremiseChanged()
+        public void ChangeSource(INotifyPropertyChanged source)
         {
-            UpdatePremise(_premiseSource.Conclusion as INotifyPropertyChanged);
-        }
-        private void UpdatePremise(INotifyPropertyChanged premise)
-        {
-            if (ReferenceEquals(_premise, premise))
+            if (ReferenceEquals(_source, source))
                 return;
-            if (_premise != null)
+            if (_source != null)
             {
-                _premise.PropertyChanged -= WhenConclusionChanged;
+                _source.PropertyChanged -= OnPropertyChanged;
             }
             else
             {
                 1.ToString();
             }
-            _premise = premise;
-            if (_premise != null)
+            _source = source;
+            if (_source != null)
             {
-                UpdateConclusion();
-                _premise.PropertyChanged += WhenConclusionChanged;
+                UpdateValue();
+                _source.PropertyChanged += OnPropertyChanged;
             }
             else
             {
                 1.ToString();
             }
         }
-        private void WhenConclusionChanged(object sender, PropertyChangedEventArgs e)
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == _propertyName)
             {
-                UpdateConclusion();
+                UpdateValue();
             }
             else
             {
                 1.ToString();
             }
         }
-        private void UpdateConclusion()
+        private void UpdateValue()
         {
-            var value = _premise
+            var value = _source
                 .GetType()
                 .GetProperty(_propertyName)
-                .GetValue(_premise);
+                .GetValue(_source);
 
-            if (ReferenceEquals(Conclusion, value))
+            if (ReferenceEquals(Value, value))
                 return;
-            Conclusion = value;
-            ConclusionChanged?.Invoke();
+            Value = value;
+            Changed?.Invoke();
         }
 
         public void Dispose()
         {
-            if (_premise != null)
+            if (_source != null)
             {
-                _premise.PropertyChanged -= WhenConclusionChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
-            if (_premiseSource != null)
-            {
-                _premiseSource.ConclusionChanged -= WhenPremiseChanged;
+                _source.PropertyChanged -= OnPropertyChanged;
             }
             else
             {
@@ -97,20 +84,66 @@ namespace Tests.FirstTry
             }
         }
     }
-    internal static class Ext
+    [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
+    internal sealed class Compound : IObservable
     {
-        public static Observable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
+        private readonly IObservable _premiseSource;
+        private readonly Npc _npc;
+        public object Value { get; private set; }
+        public event Action Changed;
+
+        public Compound(IObservable premiseSource, string propertyName)
         {
-            var observable = new Observable(source, propertyName);
-            if (handler != null) observable.ConclusionChanged += handler;
-            return observable;
+            _premiseSource = premiseSource;
+            _npc = new Npc(propertyName, changeHandler: UpdateValue);
+            _premiseSource.Changed += OnPremiseChanged;
+            OnPremiseChanged();
         }
-        public static Observable Observe(this Observable source, string propertyName, Action handler = null)
+
+        private void ChangePremise(INotifyPropertyChanged premise)
         {
-            var observable = new Observable(source, propertyName);
-            if (handler != null) observable.ConclusionChanged += handler;
-            return observable;
+            _npc.ChangeSource(premise);
+        }
+
+        private void OnPremiseChanged()
+        {
+            ChangePremise(_premiseSource.Value as INotifyPropertyChanged);
+        }
+
+        private void UpdateValue()
+        {
+            if (ReferenceEquals(Value, _npc.Value))
+                return;
+            Value = _npc.Value;
+            Changed?.Invoke();
+        }
+
+        public void Dispose()
+        {
+            _npc.Dispose();
+            if (_premiseSource != null)
+            {
+                _premiseSource.Changed -= OnPremiseChanged;
+            }
+            else
+            {
+                1.ToString();
+            }
         }
     }
 
+    internal static class Ext
+    {
+        public static IObservable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
+        {
+            var observable = new Npc(propertyName, source, handler);
+            return observable;
+        }
+        public static IObservable Observe(this IObservable source, string propertyName, Action handler = null)
+        {
+            var observable = new Compound(source, propertyName);
+            if (handler != null) observable.Changed += handler;
+            return observable;
+        }
+    }
 }
