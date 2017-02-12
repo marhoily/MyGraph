@@ -23,7 +23,7 @@ namespace Tests
         }
 
         private static List<string> Check(Expression<Action<Target, T2>> exp) 
-            => exp.GetPropertyNames();
+            => exp.GetUniquePropertyNames();
 
         [Fact]
         public void AccessNone()

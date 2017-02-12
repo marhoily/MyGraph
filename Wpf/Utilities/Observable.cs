@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq.Expressions;
+using static System.Collections.Specialized.NotifyCollectionChangedAction;
 
 namespace MyGraph
 {
@@ -69,8 +73,19 @@ namespace MyGraph
         }
     }
 
-    public static class Ext
+    public static class NpcExtensions
     {
+        public static Action Track<T>(this INotifyPropertyChanged trackable, string propertyName, Action<T> onChanged)
+        {
+            if (trackable == null) return () => { };
+            PropertyChangedEventHandler handler = (s, e) =>
+            {
+                if (e.PropertyName == propertyName) onChanged((T)s);
+            };
+            trackable.PropertyChanged += handler;
+            return () => trackable.PropertyChanged -= handler;
+        }
+
         public static IObservable<T> Observe<T>(this INotifyPropertyChanged source, string propertyName, Action<T> handler = null)
         {
             return CreateNpc(source, propertyName, handler);
@@ -89,6 +104,35 @@ namespace MyGraph
             npc.ChangeSource(source);
             if (handler != null) npc.Subscribe(handler);
             return npc;
+        }
+
+        public static Action Track<T>(
+            this Expression<Func<ObservableCollection<T>>> exp,
+            Action<T> added, Action<T> removed)
+        {
+            var getCollection = exp.Compile();
+            var collection = getCollection();
+            NotifyCollectionChangedEventHandler handler = (s, e) =>
+            {
+                switch (e.Action)
+                {
+                    case Add:
+                        foreach (T item in e.NewItems)
+                            added(item);
+                        break;
+                    case Remove:
+                        foreach (T item in e.OldItems)
+                            removed(item);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            };
+            collection.CollectionChanged += handler;
+            foreach (var item in collection)
+                added(item);
+
+            return () => collection.CollectionChanged -= handler;
         }
     }
 }

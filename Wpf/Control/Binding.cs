@@ -41,7 +41,7 @@ namespace MyGraph
         {
             var compiledAction = action.Compile();
             compiledAction(Source, Target);
-            foreach (var propertyName in action.GetPropertyNames())
+            foreach (var propertyName in action.GetUniquePropertyNames())
                 _propertyChangedReactions[propertyName] = compiledAction;
             return this;
         }

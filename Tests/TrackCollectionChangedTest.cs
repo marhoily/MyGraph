@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Caliburn.Micro;
 using FluentAssertions;
+using MyGraph;
 using Xunit;
 
 namespace Tests
@@ -30,7 +31,7 @@ namespace Tests
         private readonly Action _dispose;
 
         private Action TrackSample(Action<int> added, Action<int> removed) =>
-            MyGraph.MyExpressionExtensions.Track(() => _sample.Collection, added, removed);
+            NpcExtensions.Track(() => _sample.Collection, added, removed);
 
         public TrackCollectionChangedTest()
         {

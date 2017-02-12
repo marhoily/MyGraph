@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -10,73 +7,22 @@ using JetBrains.Annotations;
 
 namespace MyGraph
 {
-    public static class MyExpressionExtensions
+    public static class PropertiesExplorationExtensions
     {
-        public static Action Track<T>(this INotifyPropertyChanged trackable, string propertyName, Action<T> onChanged)
-        {
-            if (trackable == null) return () => { };
-            PropertyChangedEventHandler handler = (s, e) =>
-            {
-                if (e.PropertyName == propertyName) onChanged((T) s);
-            };
-            trackable.PropertyChanged += handler;
-            return () => trackable.PropertyChanged -= handler;
-        }
-        public static Action Track(this INotifyPropertyChanged trackable, string propertyName, Action onChanged)
-        {
-
-            return trackable.Track<object>(propertyName, _ => onChanged());
-        }
-
-        public static string GetPropertyName(this Expression<Func<object>> exp)
-        {
-            var access = exp.Body as MemberExpression;
-            var prop = access?.Member as PropertyInfo;
-            return prop?.Name;
-        }
-
-        public static Action Track<T>(this Expression<Func<T>> exp, Action<T> onChanged)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static IEnumerable<Expression<Func<object>>> ExtractPath<T>(Expression<Func<T>> exp)
+        public static IEnumerable<Expression<Func<object>>> ExtractSubexpressions<T>(this Expression<Func<T>> exp)
         {
             var v = new AccessListVisitor(exp.Body);
             v.Visit(exp.Body);
             return v.All.Select(e => Expression.Lambda<Func<object>>(e, false));
         }
-
-        public static Action Track<T>(this Expression<Func<ObservableCollection<T>>> exp,
-            Action<T> added, Action<T> removed)
+        public static IEnumerable<string> ExtractPropertyNames<T>(this Expression<Func<T>> exp)
         {
-            var getCollection = exp.Compile();
-            var collection = getCollection();
-            NotifyCollectionChangedEventHandler handler = (s, e) =>
-            {
-                switch (e.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        foreach (T item in e.NewItems)
-                            added(item);
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        foreach (T item in e.OldItems)
-                            removed(item);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            };
-            collection.CollectionChanged += handler;
-            foreach (var item in collection)
-                added(item);
-
-            return () => collection.CollectionChanged -= handler; 
+            var v = new AccessListVisitor(exp.Body);
+            v.Visit(exp.Body);
+            return v.All.Select(e => e.GetPropertyName());
         }
-        
 
-        internal sealed class AccessListVisitor : ExpressionVisitor
+        sealed class AccessListVisitor : ExpressionVisitor
         {
             public AccessListVisitor(Expression root)
             {
@@ -91,9 +37,16 @@ namespace MyGraph
                 return base.VisitMember(node);
             }
         }
+        public static string GetPropertyName(this Expression<Func<object>> exp)
+            => exp.Body.GetPropertyName();
 
-
-        public static List<string> GetPropertyNames<TTarget, T2>(this Expression<Action<TTarget, T2>> exp)
+        public static string GetPropertyName(this Expression exp)
+        {
+            var access = exp as MemberExpression;
+            var prop = access?.Member as PropertyInfo;
+            return prop?.Name;
+        }
+        public static List<string> GetUniquePropertyNames<TTarget, T2>(this Expression<Action<TTarget, T2>> exp)
         {
             var myVisitor = new NameVisitor(typeof(TTarget));
             myVisitor.Visit(exp.Body);
@@ -119,5 +72,7 @@ namespace MyGraph
                 return base.VisitMember(node);
             }
         }
+
     }
+   
 }

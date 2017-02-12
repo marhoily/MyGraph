@@ -26,7 +26,7 @@ namespace Tests
         [Fact]
         public void GetPropertyName()
         {
-            MyExpressionExtensions.GetPropertyName(() => _a.X).Should().Be("X");
+            PropertiesExplorationExtensions.GetPropertyName(() => _a.X).Should().Be("X");
         }
         [Fact]
         public void Zip()
