@@ -5,6 +5,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Windows;
 using static System.Collections.Specialized.NotifyCollectionChangedAction;
 
 namespace MyGraph
@@ -71,6 +73,57 @@ namespace MyGraph
         {
             if (_source != null)
                 _source.PropertyChanged -= OnPropertyChanged;
+        }
+    }
+    public sealed class Dpo<T> : Disposables, IObservable<T>
+    {
+        private DependencyObject _source;
+        private readonly DependencyProperty _property;
+        private readonly List<Action<T>> _changed = new List<Action<T>>();
+        private readonly DependencyPropertyDescriptor _descriptor;
+
+        public Dpo(DependencyProperty property)
+        {
+            _descriptor = DependencyPropertyDescriptor.FromProperty(property, property.OwnerType);
+            _property = property;
+            Resources.Add(Unsubscribe);
+        }
+
+        public T Value { get; private set; }
+        public void Subscribe(Action<T> handler) => _changed.Add(handler);
+
+        public void ChangeSource(DependencyObject source)
+        {
+            if (ReferenceEquals(_source, source))
+                return;
+            if (_source != null)
+            {
+                _descriptor.AddValueChanged(_source, OnPropertyChanged);
+            }
+            _source = source;
+            UpdateValue();
+            if (_source != null)
+            {
+                _descriptor.RemoveValueChanged(_source, OnPropertyChanged);
+            }
+        }
+        private void OnPropertyChanged(object sender, EventArgs eventArgs)
+        {
+            UpdateValue();
+        }
+        private void UpdateValue()
+        {
+            var value = (T) _source.GetValue(_property);
+
+            if (Equals(Value, value))
+                return;
+            Value = value;
+            _changed.ForEach(handle => handle(value));
+        }
+        private void Unsubscribe()
+        {
+            if (_source != null)
+                _descriptor.RemoveValueChanged(_source, OnPropertyChanged);
         }
     }
 
@@ -151,14 +204,19 @@ namespace MyGraph
             return source.Track<TResult>(pathExpression
                 .ExtractPropertyNames().Skip(count: 1).ToArray());
         }
+        public static IObservable<TResult> Track<TResult>(this DependencyObject source, Expression<Func<TResult>> pathExpression)
+        {
+            return source.Track<TResult>(pathExpression
+                .ExtractPropertyNames().Skip(count: 1).ToArray());
+        }
         public static IObservable<TResult> Track<TSource, TResult>(this TSource source, Expression<Func<TSource, TResult>> pathExpression)
             where TSource : INotifyPropertyChanged
         {
             return source.Track<TResult>(pathExpression
                 .ExtractPropertyNames().Skip(count: 1).ToArray());
         }
-        public static IObservable<T> Track<T>(
-            this INotifyPropertyChanged source, params string[] path)
+
+        private static IObservable<T> Track<T>(this INotifyPropertyChanged source, params string[] path)
         {
             if (path.Length == 0) throw new ArgumentOutOfRangeException(nameof(path));
             if (path.Length == 1) return source.Observe<T>(path.Single());
@@ -167,6 +225,31 @@ namespace MyGraph
             return middle.Aggregate(first, (current, part) 
                     => current.Observe<INotifyPropertyChanged>(part))
                 .Observe<T>(path.Last());
+        }
+        private static IObservable<T> Track<T>(this DependencyObject source, params string[] path)
+        {
+            if (path.Length == 0) throw new ArgumentOutOfRangeException(nameof(path));
+            if (path.Length == 1) return source.Observe<T>(path.Single());
+            var first = source.Observe<INotifyPropertyChanged>(path.First());
+            var middle = path.Skip(count: 1).Take(path.Length - 2);
+            return middle.Aggregate(first, (current, part) 
+                    => current.Observe<INotifyPropertyChanged>(part))
+                .Observe<T>(path.Last());
+        }
+        public static IObservable<T> Observe<T>(this DependencyObject source, string propertyName, Action<T> handler = null)
+        {
+            var fieldInfo = source.GetType()
+                .GetField(propertyName + "Property", BindingFlags.Static | BindingFlags.Public);
+            if (fieldInfo == null) throw new Exception("fieldInfo == null");
+            var dp = (DependencyProperty)fieldInfo.GetValue(source);
+            return source.Observe(dp, handler);
+        }
+        public static IObservable<T> Observe<T>(this DependencyObject source, DependencyProperty property, Action<T> handler = null)
+        {
+            var npc = new Dpo<T>(property);
+            npc.ChangeSource(source);
+            if (handler != null) npc.Subscribe(handler);
+            return npc;
         }
         public static IObservable<T> Observe<T>(this INotifyPropertyChanged source, string propertyName, Action<T> handler = null)
         {
@@ -192,16 +275,23 @@ namespace MyGraph
             this Expression<Func<ObservableCollection<T>>> exp,
             Action<T> added, Action<T> removed)
         {
-            var npc = typeof(INotifyPropertyChanged);
-            var goodPart = exp.ExtractSubexpressions()
-                .SkipWhile(e => !npc.IsAssignableFrom(e.Body.Type))
-                .ToList();
-            var first = goodPart
-                .Select(e => e.Compile()())
-                .OfType<INotifyPropertyChanged> ()
-                .First();
+            var path = exp.ExtractSubexpressions().ToList();
+          // var npc = typeof(INotifyPropertyChanged);
+          // var dpo = typeof(DependencyObject);
+          // var firstType = path[0].Body.Type;
+          //  if (npc.IsAssignableFrom(firstType))
+          //      (INotifyPropertyChanged)path[0].Compile()()
+            /* var npc = typeof(INotifyPropertyChanged);
+             var goodPart = exp.ExtractSubexpressions()
+                 .SkipWhile(e => !npc.IsAssignableFrom(e.Body.Type))
+                 .ToList();
+             var first = goodPart
+                 .Select(e => e.Compile()())
+                 .OfType<INotifyPropertyChanged> ()
+                 .First();*/
+            var first = (DependencyObject)path[0].Compile()();
             var observable = first.Track<ObservableCollection<T>>(
-                goodPart.Select(e => e.GetPropertyName()).Skip(1).ToArray());
+                path.Select(e => e.GetPropertyName()).Skip(1).ToArray());
             return observable.Track(added, removed).Dispose;
         }
 

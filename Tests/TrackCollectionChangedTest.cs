@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using Caliburn.Micro;
 using FluentAssertions;
 using MyGraph;
@@ -8,9 +9,9 @@ using Xunit;
 
 namespace Tests
 {
-    public sealed class TrackCollectionChangedTest
+    public sealed class TrackCollectionChangedTest : DependencyObject
     {
-        sealed class Sample : PropertyChangedBase
+        public sealed class Sample : PropertyChangedBase
         {
             private ObservableCollection<int> _collection = new ObservableCollection<int> { 1, 2, 3 };
 
@@ -26,50 +27,60 @@ namespace Tests
             }
         }
 
-        private readonly Sample _sample = new Sample();
+        public static readonly DependencyProperty SmplProperty = DependencyProperty.Register(
+            "Smpl", typeof(Sample), typeof(TrackCollectionChangedTest), new PropertyMetadata(default(Sample)));
+
+        public Sample Smpl
+        {
+            get { return (Sample) GetValue(SmplProperty); }
+            set { SetValue(SmplProperty, value); }
+        }
+        //private readonly Sample _sample;
         private readonly List<string> _log = new List<string>();
         private readonly Action _dispose;
 
         private Action TrackSample(Action<int> added, Action<int> removed) =>
-            NpcExtensions.Track(() => _sample.Collection, added, removed);
+            NpcExtensions.Track(() => Smpl.Collection, added, removed);
 
         public TrackCollectionChangedTest()
         {
             _dispose = TrackSample(
                 x => _log.Add("Added: " + x),
                 y => _log.Add("Removed: " + y));
+            _log.Should().BeEmpty();
+            Smpl = new Sample();
             _log.Should().Equal("Added: 1", "Added: 2", "Added: 3");
-            _log.Clear();
+            _log.Clear(); 
         }
 
         [Fact]
         public void Add_Should_Log()
         {
-            _sample.Collection.Add(4);
+            Smpl.Collection.Add(4);
             _log.Should().Equal("Added: 4");
         }
         [Fact]
         public void Remove_Should_Log()
         {
-            _sample.Collection.RemoveAt(1);
+            Smpl.Collection.RemoveAt(1);
             _log.Should().Equal("Removed: 2");
         }
         [Fact]
         public void Others_Should_Throw()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _sample.Collection.Clear());
+            Assert.Throws<ArgumentOutOfRangeException>(() => Smpl.Collection.Clear());
         }
         [Fact]
         public void Dispose_Should_Stop_Logging()
         {
             _dispose();
-            _sample.Collection.RemoveAt(1);
+            Smpl.Collection.RemoveAt(1);
             _log.Should().BeEmpty();
         }
         [Fact]
         public void Property_Change_Should_Log()
         {
-            _sample.Collection = new ObservableCollection<int> { 7 };
+            Smpl.Collection = new ObservableCollection<int> { 7 };
             _log.Should().Equal("Removed: 1", "Removed: 2", "Removed: 3", "Added: 7");
         }
     }
