@@ -2,26 +2,45 @@
 
 using System;
 using System.ComponentModel;
+using MyGraph;
 
-namespace Tests.SecondTry
+namespace Tests.WithWatcher
 {
+    internal sealed class Watcher
+    {
+        private readonly string _propertyName;
+
+        public Watcher(string propertyName)
+        {
+            _propertyName = propertyName;
+        }
+
+        public object Look(object premise) => premise
+                .GetType()
+                .GetProperty(_propertyName)
+                .GetValue(premise);
+
+        public Action Track(INotifyPropertyChanged premise, Action onChange)
+            => premise.Track(_propertyName, onChange);
+    }
     internal sealed class Observable : IDisposable
     {
         private readonly Observable _premiseSource;
         private INotifyPropertyChanged _premise;
-        private readonly string _propertyName;
+        private readonly Watcher _watcher;
         public object Fact { get; private set; }
-        public event Action FactChanged; 
+        private Action _disposePremiseTracking;
+        public event Action FactChanged;
 
-        public Observable(INotifyPropertyChanged premise, string propertyName)
+        public Observable(INotifyPropertyChanged premise, Watcher watcher)
         {
-            _propertyName = propertyName;
+            _watcher = watcher;
             ChangePremise(premise);
         }
-        public Observable(Observable premiseSource, string propertyName)
+        public Observable(Observable premiseSource, Watcher watcher)
         {
             _premiseSource = premiseSource;
-            _propertyName = propertyName;
+            _watcher = watcher;
             _premiseSource.FactChanged += OnPremiseChanged;
             OnPremiseChanged();
         }
@@ -32,7 +51,8 @@ namespace Tests.SecondTry
                 return;
             if (_premise != null)
             {
-                _premise.PropertyChanged -= OnPropertyChanged;
+                _disposePremiseTracking?.Invoke();
+                _disposePremiseTracking = null;
             }
             else
             {
@@ -42,7 +62,7 @@ namespace Tests.SecondTry
             if (_premise != null)
             {
                 UpdateValue();
-                _premise.PropertyChanged += OnPropertyChanged;
+                _disposePremiseTracking = _watcher.Track(_premise, UpdateValue);
             }
             else
             {
@@ -53,24 +73,10 @@ namespace Tests.SecondTry
         {
             ChangePremise(_premiseSource.Fact as INotifyPropertyChanged);
         }
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == _propertyName)
-            {
-                UpdateValue();
-            }
-            else
-            {
-                1.ToString();
-            }
-        }
+        
         private void UpdateValue()
         {
-            var value = _premise
-                .GetType()
-                .GetProperty(_propertyName)
-                .GetValue(_premise);
-
+            var value = _watcher.Look(_premise);
             if (ReferenceEquals(Fact, value))
                 return;
             Fact = value;
@@ -79,14 +85,7 @@ namespace Tests.SecondTry
 
         public void Dispose()
         {
-            if (_premise != null)
-            {
-                _premise.PropertyChanged -= OnPropertyChanged;
-            }
-            else
-            {
-                1.ToString();
-            }
+            _disposePremiseTracking?.Invoke();
             if (_premiseSource != null)
             {
                 _premiseSource.FactChanged -= OnPremiseChanged;
@@ -101,13 +100,13 @@ namespace Tests.SecondTry
     {
         public static Observable Observe(this INotifyPropertyChanged source, string propertyName, Action handler = null)
         {
-            var observable = new Observable(source, propertyName);
+            var observable = new Observable(source, new Watcher(propertyName));
             if (handler != null) observable.FactChanged += handler;
             return observable;
         }
         public static Observable Observe(this Observable source, string propertyName, Action handler = null)
         {
-            var observable = new Observable(source, propertyName);
+            var observable = new Observable(source, new Watcher(propertyName));
             if (handler != null) observable.FactChanged += handler;
             return observable;
         }

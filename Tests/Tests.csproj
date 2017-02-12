@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SecondTry\Observable.cs" />
+    <Compile Include="WithWatcher\Observable.cs" />
     <Compile Include="GetPropertyNamesTest.cs" />
     <Compile Include="MyVisitorTest.cs" />
     <Compile Include="FirstTry\Observable.cs" />

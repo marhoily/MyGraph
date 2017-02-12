@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using FluentAssertions;
 using MyGraph;
-using Tests.SecondTry;
+using Tests.WithWatcher;
 using Xunit;
 
 namespace Tests
