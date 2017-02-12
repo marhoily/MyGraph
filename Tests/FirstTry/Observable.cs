@@ -198,6 +198,16 @@ namespace Tests.FirstTry
             observable.Value.ToString().Should().Be("c");
         }
         [Fact]
+        public void Observable_Should_Notify_About_Changing_Source()
+        {
+            var chain = Chain(start: 'a', count: 3);
+            var source = new FakeObservable(chain[0]);
+            var observable = new Observable<S>(source, nameof(S.X));
+            observable.Subscribe(s => _log.Add(s.ToString()));
+            source.Value = chain[1];
+            PopLog().Should().Equal("c");
+        }
+        [Fact]
         public void Observable_Value_Should_React_To_Replacing_Source_Property()
         {
             var chain = Chain(start: 'a', count: 3);
@@ -208,6 +218,17 @@ namespace Tests.FirstTry
             observable.Value.ToString().Should().Be("c");
         }
         [Fact]
+        public void Observable_Should_Notify_About_Changing_Source_Property()
+        {
+            var chain = Chain(start: 'a', count: 3);
+            var source = new FakeObservable(chain[0]);
+            var observable = new Observable<S>(source, nameof(S.X));
+            observable.Subscribe(s => _log.Add(s.ToString()));
+            chain[0].X = chain[2];
+            PopLog().Should().Equal("c");
+        }
+
+        // [Fact]
         public void Observables1()
         {
             var chain = Chain(start: 'a', count: 3);
