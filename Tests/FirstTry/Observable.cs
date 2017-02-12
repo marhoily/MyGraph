@@ -92,8 +92,7 @@ namespace Tests.FirstTry
         public void Dispose()
         {
             _npc.Dispose();
-            if (_source != null)
-                _source.Changed -= _npc.ChangeSource;
+            _source?.Dispose();
         }
     }
 
@@ -131,7 +130,7 @@ namespace Tests.FirstTry
         }
 
         [Fact]
-        public void Observable_Should_Dispose_Npc()
+        public void Observable_Should_Dispose_Both_Npc_And_Source()
         {
             var o = _a
                 .Observe<S>(nameof(S.X), s => _log.Add(s.ToString()))
@@ -139,7 +138,7 @@ namespace Tests.FirstTry
             _a.X = _b;
             _a.ToString().Should().Be("a*b*");
             o.Dispose();
-            _a.ToString().Should().Be("a*b");
+            _a.ToString().Should().Be("ab");
         }
         [Fact]
         public void Observables()
