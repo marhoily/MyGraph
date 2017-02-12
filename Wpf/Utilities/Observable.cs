@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Linq.Expressions;
 using static System.Collections.Specialized.NotifyCollectionChangedAction;
 
@@ -86,6 +87,24 @@ namespace MyGraph
             return () => trackable.PropertyChanged -= handler;
         }
 
+        public static IObservable<TResult> Observe<TSource, TResult>(this TSource source,
+            Expression<Func<TSource, TResult>> pathExpression, Action<TResult> handler)
+            where TSource : INotifyPropertyChanged
+        {
+            return source.Observe(handler, pathExpression
+                .ExtractPropertyNames().Skip(count: 1).ToArray());
+        }
+        public static IObservable<T> Observe<T>(
+            this INotifyPropertyChanged source, Action<T> handler, params string[] path)
+        {
+            if (path.Length == 0) throw new ArgumentOutOfRangeException(nameof(path));
+            if (path.Length == 1) return source.Observe(path.Single(), handler);
+            var first = source.Observe<INotifyPropertyChanged>(path.First());
+            var middle = path.Skip(count: 1).Take(path.Length - 2);
+            return middle.Aggregate(first, (current, part) 
+                    => current.Observe<INotifyPropertyChanged>(part))
+                .Observe(path.Last(), handler);
+        }
         public static IObservable<T> Observe<T>(this INotifyPropertyChanged source, string propertyName, Action<T> handler = null)
         {
             return CreateNpc(source, propertyName, handler);

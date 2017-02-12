@@ -15,6 +15,12 @@ namespace MyGraph
             v.Visit(exp.Body);
             return v.All.Select(e => Expression.Lambda<Func<object>>(e, false));
         }
+        public static IEnumerable<string> ExtractPropertyNames<TSource, TResult>(this Expression<Func<TSource, TResult>> exp)
+        {
+            var v = new AccessListVisitor(exp.Body);
+            v.Visit(exp.Body);
+            return v.All.Select(e => e.GetPropertyName());
+        }
         public static IEnumerable<string> ExtractPropertyNames<T>(this Expression<Func<T>> exp)
         {
             var v = new AccessListVisitor(exp.Body);
@@ -40,7 +46,7 @@ namespace MyGraph
         public static string GetPropertyName(this Expression<Func<object>> exp)
             => exp.Body.GetPropertyName();
 
-        public static string GetPropertyName(this Expression exp)
+        private static string GetPropertyName(this Expression exp)
         {
             var access = exp as MemberExpression;
             var prop = access?.Member as PropertyInfo;
