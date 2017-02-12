@@ -129,6 +129,18 @@ namespace Tests.FirstTry
             o2.Dispose();
             _a.ToString().Should().Be("a");
         }
+
+        [Fact]
+        public void Observable_Should_Dispose_Npc()
+        {
+            var o = _a
+                .Observe<S>(nameof(S.X), s => _log.Add(s.ToString()))
+                .Observe<string>(nameof(S.Name), _log.Add);
+            _a.X = _b;
+            _a.ToString().Should().Be("a*b*");
+            o.Dispose();
+            _a.ToString().Should().Be("a*b");
+        }
         [Fact]
         public void Observables()
         {
