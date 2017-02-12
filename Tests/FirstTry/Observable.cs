@@ -110,13 +110,25 @@ namespace Tests.FirstTry
             return observable;
         }
     }
-    public sealed class TrackPropertyChangedTest
+    public sealed class ObservablesTest
     {
         private readonly S _a = new S("a", null);
         private readonly S _b = new S("b", null);
         private readonly S _c = new S("c", null);
         private readonly List<string> _log = new List<string>();
-   
+
+        [Fact]
+        public void Npc_Should_Subscribe()
+        {
+            var o1 = _a.Observe<string>(nameof(S.Name), _log.Add);
+            _a.ToString().Should().Be("a*");
+            var o2 = _a.Observe<string>(nameof(S.Name), _log.Add);
+            _a.ToString().Should().Be("a**");
+            o1.Dispose();
+            _a.ToString().Should().Be("a*");
+            o2.Dispose();
+            _a.ToString().Should().Be("a");
+        }
         [Fact]
         public void Observables()
         {
