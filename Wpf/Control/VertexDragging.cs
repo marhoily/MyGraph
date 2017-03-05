@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace MyGraph
 {
-    internal static class VertexDragExtensions
+    internal static class VertexDragging
     {
         public static T SubscribeForDragging<T>(this T control, GraphControl map)
             where T : FrameworkElement
