@@ -74,12 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GetPropertyNamesTest.cs" />
-    <Compile Include="MyVisitorTest.cs" />
-    <Compile Include="Observable.cs" />
-    <Compile Include="NpcSamples.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TrackCollectionChangedTest.cs" />
-    <Compile Include="TrackPropertyChangedTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
