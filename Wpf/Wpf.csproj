@@ -79,8 +79,9 @@
     <Compile Include="Control\GraphControl.Properties.cs">
       <DependentUpon>GraphControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\VertexDragHelper.cs" />
-    <Compile Include="Utilities\VisualExtensions.cs" />
+    <Compile Include="Control\IEdge.cs" />
+    <Compile Include="Control\VertexDragExtensions.cs" />
+    <Compile Include="TestImplementation\Edge.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="Utilities\CachingDictionary.cs" />
     <Compile Include="TestImplementation\Graph.cs" />
@@ -91,7 +92,7 @@
     <Compile Include="Control\IVertex.cs" />
     <Compile Include="TestImplementation\Vertex.cs" />
     <Compile Include="Control\Plot.cs" />
-    <Compile Include="Utilities\PlotExtensions.cs" />
+    <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="RootViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

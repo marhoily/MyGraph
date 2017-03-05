@@ -7,9 +7,4 @@ namespace MyGraph
     {
         Point Location { get; set; }
     }
-    public interface IEdge : INotifyPropertyChanged
-    {
-        IVertex X { get;  }
-        IVertex Y { get;  }
-    }
 }
