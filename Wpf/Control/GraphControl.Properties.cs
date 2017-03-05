@@ -21,5 +21,14 @@ namespace MyGraph
             get { return (IGraph) GetValue(GraphProperty); }
             set { SetValue(GraphProperty, value); }
         }
+
+        public static readonly DependencyProperty EdgeTemplateProperty = DependencyProperty.Register(
+            "EdgeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+
+        public DataTemplate EdgeTemplate
+        {
+            get { return (DataTemplate) GetValue(EdgeTemplateProperty); }
+            set { SetValue(EdgeTemplateProperty, value); }
+        }
     }
 }

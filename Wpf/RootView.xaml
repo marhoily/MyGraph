@@ -14,6 +14,16 @@
                                  Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"/>
                     </DataTemplate>
                 </local:GraphControl.VertexTemplate>
+                <local:GraphControl.EdgeTemplate>
+                    <DataTemplate DataType="local:IEdge">
+                        <Line StrokeThickness="1" Stroke="SaddleBrown"
+                              X1="{Binding X.Location.X}"
+                              Y1="{Binding X.Location.Y}"
+                              X2="{Binding Y.Location.X}"
+                              Y2="{Binding Y.Location.Y}"
+                              />
+                    </DataTemplate>
+                </local:GraphControl.EdgeTemplate>
             </local:GraphControl>
         </TabItem>
         <TabItem Header="Plot">

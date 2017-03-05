@@ -10,10 +10,10 @@ namespace MyGraph
 
         public RootViewModel()
         {
-            Graph = new Graph(new ObservableCollection<IVertex>
-            {
-                new Vertex(new Point(100, 100))
-            });
+            var a = new Vertex(new Point(100, 100));
+            var b = new Vertex(new Point(300, 200));
+            Graph = new Graph(new ObservableCollection<IVertex>{a,b},
+                new ObservableCollection<IEdge> {new Edge(a, b)});
         }
     }
 }
