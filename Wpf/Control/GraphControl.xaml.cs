@@ -41,7 +41,7 @@ namespace MyGraph
             {
                 synchronizer = this.TrackSet(ctrl => ctrl.Graph.Edges)
                     .Select(CreateEdgeControl)
-                    .SynchronizeTo(_plot.Children);
+                    .SynchronizeTo(_edges.Children);
             };
             Unloaded += (s, e) =>
             {

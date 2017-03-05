@@ -21,6 +21,9 @@
                               Y1="{Binding X.Location.Y}"
                               X2="{Binding Y.Location.X}"
                               Y2="{Binding Y.Location.Y}"
+                              Panel.ZIndex="-1"
+                              Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:GraphControl}}"
+                              Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:GraphControl}}"
                               />
                     </DataTemplate>
                 </local:GraphControl.EdgeTemplate>

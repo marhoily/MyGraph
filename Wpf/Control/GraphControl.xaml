@@ -6,5 +6,8 @@
              xmlns:local="clr-namespace:MyGraph"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <local:Plot x:Name="_plot" Background="White"/>
+    <Grid Background="White">
+        <Canvas x:Name="_edges" />
+        <local:Plot x:Name="_plot" />
+    </Grid>
 </UserControl>
