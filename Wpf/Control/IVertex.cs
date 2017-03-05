@@ -5,6 +5,6 @@ namespace MyGraph
 {
     public interface IVertex : INotifyPropertyChanged
     {
-        Point Location { get; }
+        Point Location { get; set; }
     }
 }

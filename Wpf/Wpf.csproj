@@ -51,10 +51,6 @@
       <HintPath>..\packages\JetBrains.Annotations.10.2.1\lib\net\JetBrains.Annotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Npc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\git\pc\Npc\bin\Debug\Npc.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -83,6 +79,8 @@
     <Compile Include="Control\GraphControl.Properties.cs">
       <DependentUpon>GraphControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\VertexDragHelper.cs" />
+    <Compile Include="Utilities\VisualExtensions.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="Utilities\CachingDictionary.cs" />
     <Compile Include="TestImplementation\Graph.cs" />
@@ -135,6 +133,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\..\git\pc\Npc\Npc.csproj">
+      <Project>{371a9a94-e392-47af-ba11-fba1023185cc}</Project>
+      <Name>Npc</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

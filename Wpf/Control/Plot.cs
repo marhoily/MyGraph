@@ -1,13 +1,14 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using static System.Windows.FrameworkPropertyMetadataOptions;
 
 namespace MyGraph
 {
     public sealed class Plot : Panel
     {
         public static readonly DependencyProperty XProperty = DependencyProperty.RegisterAttached(
-            "X", typeof(double), typeof(Plot), new PropertyMetadata(default(double)));
+            "X", typeof(double), typeof(Plot), new FrameworkPropertyMetadata(0.0, AffectsParentArrange));
 
         public static void SetX(DependencyObject element, double value)
         {
@@ -20,7 +21,7 @@ namespace MyGraph
         }
 
         public static readonly DependencyProperty YProperty = DependencyProperty.RegisterAttached(
-            "Y", typeof(double), typeof(Plot), new PropertyMetadata(default(double)));
+            "Y", typeof(double), typeof(Plot), new FrameworkPropertyMetadata(0.0, AffectsParentArrange));
 
         public static void SetY(DependencyObject element, double value)
         {
