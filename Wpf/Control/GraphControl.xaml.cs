@@ -1,27 +1,27 @@
 ﻿using System.Windows;
+using Npc;
 
 namespace MyGraph
 {
     public partial class GraphControl
     {
-        private readonly BindingRegistry<IVertex, FrameworkElement> _vertices;
+        private SetSynchronizer<FrameworkElement> _plotSynchronizer;
 
         public GraphControl()
         {
             InitializeComponent();
-            _vertices = new BindingRegistry<IVertex, FrameworkElement>(
-                () => Graph.Vertices,
-                vertex => VertexTemplate.LoadContent()
-                    .Cast<FrameworkElement>()
-                    .Bind(vertex)
-                    .Link((v, c) => c.MoveTo(v.Location))
-                    .LinkTarget(c => _plot.Children.Add(c), c =>_plot.Children.Remove(c)));
-        }
-
-        private void GraphChanged()
-        {
-            foreach (var vertex in Graph.Vertices)
-                _vertices.GetTarget(vertex);
+            Loaded += (s, e) =>
+            {
+                _plotSynchronizer = this.TrackSet(ctrl => ctrl.Graph.Vertices)
+                    .Select(vertex => VertexTemplate.LoadContent().Cast<FrameworkElement>())
+                    .With((v, c) => c.MoveTo(v.Location))
+                    .SynchronizeTo(_plot.Children);
+            };
+            Unloaded += (s, e) =>
+            {
+                _plotSynchronizer.Dispose();
+                _plotSynchronizer.Source.Dispose();
+            };
         }
     }
 }

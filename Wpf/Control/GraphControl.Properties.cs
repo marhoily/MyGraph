@@ -14,7 +14,7 @@ namespace MyGraph
         }
 
         public static readonly DependencyProperty GraphProperty = DependencyProperty.Register(
-            "Graph", typeof(IGraph), typeof(GraphControl), new PropertyMetadata(default(IGraph), (d, e) => ((GraphControl)d).GraphChanged()));
+            "Graph", typeof(IGraph), typeof(GraphControl), new PropertyMetadata(default(IGraph)));
 
         public IGraph Graph
         {
