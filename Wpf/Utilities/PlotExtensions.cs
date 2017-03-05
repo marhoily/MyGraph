@@ -1,9 +1,11 @@
 using System;
 using System.Windows;
+using Caliburn.Micro;
+using Action = System.Action;
 
 namespace MyGraph
 {
-    public static class UtilitarianExtensions
+    public static class Utilities
     {
         public static void WhenLoaded(this FrameworkElement element, Func<Action> act)
         {
@@ -17,10 +19,10 @@ namespace MyGraph
             return (T)element;
         }
        
-        public static T MoveTo<T>(this T element, Point p) where T : UIElement
+        public static T BindModel<T>(this T element, object model) 
+            where T : FrameworkElement
         {
-            Plot.SetX(element, p.X);
-            Plot.SetY(element, p.Y);
+            Bind.SetModel(element, model);
             return element;
         }
     }

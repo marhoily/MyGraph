@@ -1,35 +1,54 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 
 namespace MyGraph
 {
-    internal sealed class VertexDragHelper : IDisposable
+    internal static class VertexDragExtensions
     {
-        private readonly FrameworkElement _map;
-        private readonly Window _window;
-        private readonly Point _start;
-        private readonly IVertex _vertex;
-        private bool _started;
-
-        public VertexDragHelper(FrameworkElement map, FrameworkElement control, MouseEventArgs e)
+        public static T SubscribeForDragging<T>(this T control, GraphControl map)
+            where T : FrameworkElement
         {
-            _map = map;
-            _window = Window.GetWindow(control);
-            _start = e.GetPosition(_map);
-            Debug.Assert(_window != null);
-            _window.MouseMove += OnMove;
-            _vertex = (IVertex)control.DataContext;
+            control.MouseDown += (s, e) =>
+            {
+                var window = Window.GetWindow(control);
+                Debug.Assert(window != null);
+                var helper = new DragState(map, control, e);
+                MouseButtonEventHandler clean = null;
+                clean = (sender, args) =>
+                {
+                    window.ReleaseMouseCapture();
+                    window.MouseMove -= helper.OnMove;
+                    window.MouseUp -= clean;
+                };
+                window.CaptureMouse();
+                window.MouseMove += helper.OnMove;
+                window.MouseUp += clean;
+            };
+            return control;
         }
 
-        private void OnMove(object sender, MouseEventArgs e)
+        private sealed class DragState
         {
-            var p = e.GetPosition(_map);
-            _started = _started || Point.Subtract(_start, p).Length > 10;
-            if (_started) _vertex.Location = p;
-        }
+            private readonly FrameworkElement _map;
+            private readonly Point _start;
+            private readonly IVertex _vertex;
+            private bool _started;
 
-        public void Dispose() => _window.MouseMove -= OnMove;
+            public DragState(FrameworkElement map,
+                FrameworkElement control, MouseEventArgs e)
+            {
+                _map = map;
+                _start = e.GetPosition(_map);
+                _vertex = (IVertex) control.DataContext;
+            }
+
+            public void OnMove(object sender, MouseEventArgs e)
+            {
+                var p = e.GetPosition(_map);
+                _started = _started || Point.Subtract(_start, p).Length > 10;
+                if (_started) _vertex.Location = p;
+            }
+        }
     }
 }

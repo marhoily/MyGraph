@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using Caliburn.Micro;
 using Npc;
 
 namespace MyGraph
@@ -11,33 +10,19 @@ namespace MyGraph
             InitializeComponent();
 
             this.WhenLoaded(() => this.TrackSet(ctrl => ctrl.Graph.Vertices)
-                .Select(CreateVertexControl)
+                .Select(vertex => VertexTemplate.LoadContent()
+                    .Cast<FrameworkElement>()
+                    .BindModel(vertex)
+                    .SubscribeForDragging(this))
                 .SynchronizeTo(_plot.Children)
                 .DisposeWithSource);
 
             this.WhenLoaded(() => this.TrackSet(ctrl => ctrl.Graph.Edges)
-                .Select(CreateEdgeControl)
+                .Select(edge => EdgeTemplate.LoadContent()
+                    .Cast<FrameworkElement>()
+                    .BindModel(edge))
                 .SynchronizeTo(_edges.Children)
                 .DisposeWithSource);
-        }
-
-
-        private FrameworkElement CreateVertexControl(IVertex vertex)
-        {
-            var control = VertexTemplate.LoadContent().Cast<FrameworkElement>();
-            Bind.SetModel(control, vertex);
-            control.MouseDown += (s, e) =>
-            {
-                var h = new VertexDragHelper(this, control, e);
-                MouseUp += (s1, e1) => h.Dispose();
-            };
-            return control;
-        }
-        private FrameworkElement CreateEdgeControl(IEdge edge)
-        {
-            var control = EdgeTemplate.LoadContent().Cast<FrameworkElement>();
-            Bind.SetModel(control, edge);
-            return control;
         }
     }
 }
