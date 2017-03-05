@@ -10,10 +10,10 @@ namespace MyGraph
         private readonly FrameworkElement _map;
         private readonly Window _window;
         private readonly Point _start;
-        private bool _started;
         private readonly IVertex _vertex;
+        private bool _started;
 
-        public VertexDragHelper(FrameworkElement map, FrameworkElement control, MouseButtonEventArgs e)
+        public VertexDragHelper(FrameworkElement map, FrameworkElement control, MouseEventArgs e)
         {
             _map = map;
             _window = Window.GetWindow(control);
@@ -30,9 +30,6 @@ namespace MyGraph
             if (_started) _vertex.Location = p;
         }
 
-        public void Dispose()
-        {
-            _window.MouseMove -= OnMove;
-        }
+        public void Dispose() => _window.MouseMove -= OnMove;
     }
 }
