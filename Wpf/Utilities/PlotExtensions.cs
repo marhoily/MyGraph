@@ -1,9 +1,17 @@
+using System;
 using System.Windows;
 
 namespace MyGraph
 {
     public static class UtilitarianExtensions
     {
+        public static void WhenLoaded(this FrameworkElement element, Func<Action> act)
+        {
+            Action dispose = null;
+            element.Loaded += (s, e) => dispose = act();
+            element.Unloaded += (s, e) => dispose();
+        }
+
         public static T Cast<T>(this object element)
         {
             return (T)element;

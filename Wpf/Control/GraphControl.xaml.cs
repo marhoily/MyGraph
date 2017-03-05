@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using Caliburn.Micro;
 using Npc;
 
@@ -8,55 +6,32 @@ namespace MyGraph
 {
     public partial class GraphControl
     {
-        private readonly List<IDisposable> _dragHelpers = new List<IDisposable>();
-
         public GraphControl()
         {
             InitializeComponent();
-            SynchronizeVertices();
-            SynchronizeEdges();
-            MouseUp += (s, e) => _dragHelpers.ForEach(h => h.Dispose());
+
+            this.WhenLoaded(() => this.TrackSet(ctrl => ctrl.Graph.Vertices)
+                .Select(CreateVertexControl)
+                .SynchronizeTo(_plot.Children)
+                .DisposeWithSource);
+
+            this.WhenLoaded(() => this.TrackSet(ctrl => ctrl.Graph.Edges)
+                .Select(CreateEdgeControl)
+                .SynchronizeTo(_edges.Children)
+                .DisposeWithSource);
         }
 
-        private void SynchronizeVertices()
-        {
-            SetSynchronizer<FrameworkElement> synchronizer = null;
-            Loaded += (s, e) =>
-            {
-                synchronizer = this.TrackSet(ctrl => ctrl.Graph.Vertices)
-                    .Select(CreateVertexControl)
-                    .With(v => v.Track(x => x.Location), (c, location) => c.MoveTo(location))
-                    .SynchronizeTo(_plot.Children);
-            };
-            Unloaded += (s, e) =>
-            {
-                synchronizer.Dispose();
-                synchronizer.Source.Dispose();
-            };
-        }
-        private void SynchronizeEdges()
-        {
-            SetSynchronizer<FrameworkElement> synchronizer = null;
-            Loaded += (s, e) =>
-            {
-                synchronizer = this.TrackSet(ctrl => ctrl.Graph.Edges)
-                    .Select(CreateEdgeControl)
-                    .SynchronizeTo(_edges.Children);
-            };
-            Unloaded += (s, e) =>
-            {
-                synchronizer.Dispose();
-                synchronizer.Source.Dispose();
-            };
-        }
 
         private FrameworkElement CreateVertexControl(IVertex vertex)
         {
             var control = VertexTemplate.LoadContent().Cast<FrameworkElement>();
             Bind.SetModel(control, vertex);
             control.Tag = vertex;
-            control.MouseDown += (s, e) => _dragHelpers
-                .Add(new VertexDragHelper(this, control, e));
+            control.MouseDown += (s, e) =>
+            {
+                var h = new VertexDragHelper(this, control, e);
+                MouseUp += (s1, e1) => h.Dispose();
+            };
             return control;
         }
         private FrameworkElement CreateEdgeControl(IEdge edge)

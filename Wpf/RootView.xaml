@@ -9,9 +9,12 @@
         <TabItem Header="GraphControl">
             <local:GraphControl Graph="{Binding Graph}">
                 <local:GraphControl.VertexTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="local:IVertex">
                         <Ellipse Width="10" Height="10"
-                                 Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"/>
+                                 Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
+                                 local:Plot.X="{Binding Location.X}"
+                                 local:Plot.Y="{Binding Location.Y}"
+                                 />
                     </DataTemplate>
                 </local:GraphControl.VertexTemplate>
                 <local:GraphControl.EdgeTemplate>
@@ -21,7 +24,6 @@
                               Y1="{Binding X.Location.Y}"
                               X2="{Binding Y.Location.X}"
                               Y2="{Binding Y.Location.Y}"
-                              Panel.ZIndex="-1"
                               Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:GraphControl}}"
                               Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:GraphControl}}"
                               />
