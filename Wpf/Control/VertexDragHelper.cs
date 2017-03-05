@@ -20,7 +20,7 @@ namespace MyGraph
             _start = e.GetPosition(_map);
             Debug.Assert(_window != null);
             _window.MouseMove += OnMove;
-            _vertex = (IVertex)control.Tag;
+            _vertex = (IVertex)control.DataContext;
         }
 
         private void OnMove(object sender, MouseEventArgs e)

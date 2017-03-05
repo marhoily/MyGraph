@@ -26,7 +26,6 @@ namespace MyGraph
         {
             var control = VertexTemplate.LoadContent().Cast<FrameworkElement>();
             Bind.SetModel(control, vertex);
-            control.Tag = vertex;
             control.MouseDown += (s, e) =>
             {
                 var h = new VertexDragHelper(this, control, e);
@@ -38,7 +37,6 @@ namespace MyGraph
         {
             var control = EdgeTemplate.LoadContent().Cast<FrameworkElement>();
             Bind.SetModel(control, edge);
-            control.Tag = edge;
             return control;
         }
     }
