@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using Npc;
 
@@ -13,20 +12,25 @@ namespace MyGraph
         public GraphControl()
         {
             InitializeComponent();
-            SetSynchronizer<FrameworkElement> plotSynchronizer = null;
+            SynchronizeVertices();
+            MouseUp += (s, e) => _dragHelpers.ForEach(h => h.Dispose());
+        }
+
+        private void SynchronizeVertices()
+        {
+            SetSynchronizer<FrameworkElement> vertexSynchronizer = null;
             Loaded += (s, e) =>
             {
-                plotSynchronizer = this.TrackSet(ctrl => ctrl.Graph.Vertices)
+                vertexSynchronizer = this.TrackSet(ctrl => ctrl.Graph.Vertices)
                     .Select(CreateVertexControl)
                     .With(v => v.Track(x => x.Location), (c, location) => c.MoveTo(location))
                     .SynchronizeTo(_plot.Children);
             };
             Unloaded += (s, e) =>
             {
-                plotSynchronizer.Dispose();
-                plotSynchronizer.Source.Dispose();
+                vertexSynchronizer.Dispose();
+                vertexSynchronizer.Source.Dispose();
             };
-            MouseUp += (s, e) => _dragHelpers.ForEach(h => h.Dispose());
         }
 
         private FrameworkElement CreateVertexControl(IVertex vertex)
