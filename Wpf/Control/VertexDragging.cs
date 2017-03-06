@@ -6,13 +6,12 @@ namespace MyGraph
 {
     internal static class VertexDragging
     {
-        /// <summary>Subscribes for the control's MouseDown event,
-        ///  then looks for the <see cref="IVertex"/> in its 
-        /// <see cref="FrameworkElement.DataContext"/>
-        /// and sets its <see cref="IVertex.Location"/> property
-        /// when deags
-        ///  
-        /// </summary>
+        /// <summary>Subscribes for the control's MouseDown event.  </summary>
+        /// <remarks>
+        ///     When dragging starts:
+        ///     1) it looks for the <see cref="IVertex" /> in the control's <see cref="FrameworkElement.DataContext" /> property
+        ///     2) Changes <see cref="IVertex" />.<see cref="IVertex.Location" /> property
+        /// </remarks>
         public static T SubscribeForDragging<T>(this T control, GraphControl map)
             where T : FrameworkElement
         {
