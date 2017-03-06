@@ -34,20 +34,14 @@
                                 <Ellipse Width="10" Height="10"
                                  Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
                                  local:Plot.X="{Binding Location.X}"
-                                 local:Plot.Y="{Binding Location.Y}"
-                                 />
+                                 local:Plot.Y="{Binding Location.Y}" />
                             </DataTemplate>
                         </local:GraphControl.VertexTemplate>
                         <local:GraphControl.EdgeTemplate>
                             <DataTemplate DataType="local:IEdge">
                                 <Line StrokeThickness="1" Stroke="SaddleBrown"
-                              X1="{Binding X.Location.X}"
-                              Y1="{Binding X.Location.Y}"
-                              X2="{Binding Y.Location.X}"
-                              Y2="{Binding Y.Location.Y}"
-                              Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:GraphControl}}"
-                              Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:GraphControl}}"
-                              />
+                                            X1="{Binding End1.Location.X}" Y1="{Binding End1.Location.Y}"
+                                            X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" />
                             </DataTemplate>
                         </local:GraphControl.EdgeTemplate>
                     </local:GraphControl>

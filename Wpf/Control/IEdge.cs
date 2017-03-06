@@ -4,7 +4,7 @@ namespace MyGraph
 {
     public interface IEdge : INotifyPropertyChanged
     {
-        IVertex X { get;  }
-        IVertex Y { get;  }
+        IVertex End1 { get;  }
+        IVertex End2 { get;  }
     }
 }
