@@ -8,8 +8,7 @@ namespace MyGraph
         public App()
         {
             InitializeComponent();
-            PresentationTraceSources.DataBindingSource.Listeners
-                .Add(new BindingErrorListener());
+           // PresentationTraceSources.DataBindingSource.Listeners.Add(new BindingErrorListener());
 
         }
     }
