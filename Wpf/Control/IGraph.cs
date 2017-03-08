@@ -8,6 +8,6 @@ namespace MyGraph
         ObservableCollection<IVertex> Vertices { get; }
         ObservableCollection<IEdge> Edges { get; }
 
-        IVertex NewEdgeSource { get; }
+        IVertex NewEdgeSource { get; set; }
     }
 }

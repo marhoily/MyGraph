@@ -38,10 +38,9 @@ namespace MyGraph
         {
             if (Graph?.NewEdgeSource != null)
             {
-                CaptureMouse();
                 var graphFreeEdge = new GraphFreeEdge(Graph.NewEdgeSource);
                 MouseMove += (s, e) => graphFreeEdge.Mouse = e.GetPosition(this);
-                MouseDown += (s, e) => LeaveNewEdgeMode();
+                MouseDown += (s, e) => Graph.NewEdgeSource = null;
                 _freeEdge = FreeEdgeTemplate.LoadContent()
                     .Cast<FrameworkElement>()
                     .BindModel(graphFreeEdge);
@@ -49,15 +48,9 @@ namespace MyGraph
             }
             else
             {
-                LeaveNewEdgeMode();
+                _edges.Children.Remove(_freeEdge);
+                _freeEdge = null;
             }
-        }
-
-        private void LeaveNewEdgeMode()
-        {
-            ReleaseMouseCapture();
-            _edges.Children.Remove(_freeEdge);
-            _freeEdge = null;
         }
     }
 
