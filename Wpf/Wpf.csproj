@@ -51,8 +51,8 @@
       <HintPath>..\packages\JetBrains.Annotations.10.3.0\lib\net\JetBrains.Annotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Npc, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npc.1.0.2\lib\net452\Npc.dll</HintPath>
+    <Reference Include="Npc, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npc.1.0.5\lib\net452\Npc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
