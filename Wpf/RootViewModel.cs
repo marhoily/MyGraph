@@ -9,10 +9,14 @@ namespace MyGraph
     public sealed class RootViewModel : PropertyChangedBase, IShell
     {
         public Graph Graph { get; }
-
+        public Point LastClickLocation { get; set; } = new Point(100, 100);
         public void Create300() => Create(300);
         public void Create1000() => Create(1000);
 
+        public void AddNode()
+        {
+            Graph.Vertices.Add(new Vertex(LastClickLocation));
+        }
         private void Create(int num)
         {
             var rnd = new Random();

@@ -23,6 +23,8 @@ namespace MyGraph
                     .BindModel(edge))
                 .SynchronizeTo(_edges.Children)
                 .DisposeWithSource);
+
+            PreviewMouseDown += (s, e) => LastClickLocation = e.GetPosition(this);
         }
     }
 }

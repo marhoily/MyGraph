@@ -28,7 +28,8 @@
                     </TextBlock>
                 </StackPanel>
                 <Border  Grid.Column="1" BorderBrush="Bisque" BorderThickness="1">
-                    <local:GraphControl Graph="{Binding Graph}">
+                    <local:GraphControl Graph="{Binding Graph}"
+                                        LastClickLocation="{Binding LastClickLocation, Mode=OneWayToSource}">
                         <local:GraphControl.VertexTemplate>
                             <DataTemplate DataType="local:IVertex">
                                 <Ellipse Width="10" Height="10"
@@ -44,6 +45,12 @@
                                             X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" />
                             </DataTemplate>
                         </local:GraphControl.EdgeTemplate>
+                        <local:GraphControl.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add Node"
+                                          cal:Message.Attach="AddNode"/>
+                            </ContextMenu>
+                        </local:GraphControl.ContextMenu>
                     </local:GraphControl>
                 </Border>
             </Grid>
