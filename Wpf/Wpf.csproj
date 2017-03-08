@@ -80,6 +80,7 @@
     <Compile Include="Control\GraphControl.Properties.cs">
       <DependentUpon>GraphControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Control\GraphFreeEdge.cs" />
     <Compile Include="Control\IEdge.cs">
       <DependentUpon>IGraph.cs</DependentUpon>
     </Compile>
