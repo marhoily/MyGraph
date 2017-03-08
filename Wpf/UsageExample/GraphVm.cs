@@ -2,13 +2,19 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
+using JetBrains.Annotations;
 
 namespace MyGraph
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public sealed class GraphVm : PropertyChangedBase, IGraph
     {
         public ObservableCollection<IVertex> Vertices { get; } = new ObservableCollection<IVertex>();
         public ObservableCollection<IEdge> Edges { get; } = new ObservableCollection<IEdge>();
+
+        private Point _lastClickLocation;
+        public void SetLastClickLocation(Point p) => _lastClickLocation = p;
+        public void AddVertex() => Vertices.Add(new VertexVm(_lastClickLocation));
 
         private IVertex _newEdgeSource;
         public IVertex NewEdgeSource
@@ -21,16 +27,10 @@ namespace MyGraph
                 NotifyOfPropertyChange();
             }
         }
-
-        private Point _lastClickLocation;
-        public void AddVertex() => Vertices.Add(new VertexVm(_lastClickLocation));
-        public void SetLastClickLocation(Point p) => _lastClickLocation = p;
-
         public void StartEdge(VertexVm source)
         {
             NewEdgeSource = source;
         }
-
         public void EndEdge(VertexVm destination)
         {
             if (NewEdgeSource == null) return;
@@ -45,8 +45,6 @@ namespace MyGraph
                     Edges.Remove(edge);
             Vertices.Remove(v);
         }
-
         public void DeleteEdge(EdgeVm e) => Edges.Remove(e);
-
     }
 }
