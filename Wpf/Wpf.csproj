@@ -93,6 +93,9 @@
     </Compile>
     <Compile Include="Control\VertexDragging.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="MapView.xaml.cs">
+      <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TestImplementation\Edge.cs" />
     <Compile Include="Utilities\CachingDictionary.cs" />
     <Compile Include="TestImplementation\Graph.cs" />
@@ -110,6 +113,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Control\GraphControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MapView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
