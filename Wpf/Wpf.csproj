@@ -52,6 +52,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Npc, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npc.1.0.5\lib\net452\Npc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -88,8 +92,8 @@
       <DependentUpon>IGraph.cs</DependentUpon>
     </Compile>
     <Compile Include="Control\VertexDragging.cs" />
-    <Compile Include="TestImplementation\Edge.cs" />
     <Compile Include="IShell.cs" />
+    <Compile Include="TestImplementation\Edge.cs" />
     <Compile Include="Utilities\CachingDictionary.cs" />
     <Compile Include="TestImplementation\Graph.cs" />
     <Compile Include="Control\GraphControl.xaml.cs">
@@ -141,12 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\..\git\pc\Npc\Npc.csproj">
-      <Project>{371a9a94-e392-47af-ba11-fba1023185cc}</Project>
-      <Name>Npc</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

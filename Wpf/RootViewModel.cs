@@ -13,7 +13,7 @@ namespace MyGraph
         public void Create300() => Create(300);
         public void Create1000() => Create(1000);
 
-        public void AddNode()
+        public void AddVertex()
         {
             Graph.Vertices.Add(new Vertex(LastClickLocation));
         }

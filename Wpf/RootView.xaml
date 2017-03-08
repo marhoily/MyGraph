@@ -24,8 +24,8 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <Button Content="300 Nodes" cal:Message.Attach="Create300" Margin="3" Padding="15, 2" />
-                    <Button Content="1000 Nodes" cal:Message.Attach="Create1000" Margin="3" Padding="15, 2" />
+                    <Button Content="300 Vertices" cal:Message.Attach="Create300" Margin="3" Padding="15, 2" />
+                    <Button Content="1000 Vertices" cal:Message.Attach="Create1000" Margin="3" Padding="15, 2" />
 
                     <TextBlock><Run Text="Total nodes: "/><InlineUIContainer>
                             <TextBlock Text="{Binding Graph.Vertices.Count}" />
@@ -50,6 +50,9 @@
                                             <MenuItem Header="Start Edge"
                                                     cal:Action.TargetWithoutContext="{Binding PlacementTarget.(FrameworkElement.Tag), RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}, Mode=FindAncestor}}"
                                                     cal:Message.Attach="StartEdge($dataContext)" />
+                                            <MenuItem Header="Delete"
+                                                    cal:Action.TargetWithoutContext="{Binding PlacementTarget.(FrameworkElement.Tag), RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}, Mode=FindAncestor}}"
+                                                    cal:Message.Attach="DeleteVertex($dataContext)" />
                                         </ContextMenu>
                                     </Ellipse.ContextMenu>
                                     <i:Interaction.Triggers>
@@ -79,8 +82,8 @@
                         </local:GraphControl.FreeEdgeTemplate>
                         <local:GraphControl.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Add Node"
-                                          cal:Message.Attach="AddNode" />
+                                <MenuItem Header="Add Vertex"
+                                          cal:Message.Attach="AddVertex" />
                             </ContextMenu>
                         </local:GraphControl.ContextMenu>
                     </local:GraphControl>
