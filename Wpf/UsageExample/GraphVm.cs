@@ -4,7 +4,7 @@ using Caliburn.Micro;
 
 namespace MyGraph
 {
-    public sealed class Graph : PropertyChangedBase, IGraph
+    public sealed class GraphVm : PropertyChangedBase, IGraph
     {
         public ObservableCollection<IVertex> Vertices { get; }
         public ObservableCollection<IEdge> Edges { get; }
@@ -21,19 +21,19 @@ namespace MyGraph
             }
         }
 
-        public void StartEdge(Vertex source)
+        public void StartEdge(VertexVm source)
         {
             NewEdgeSource = source;
         }
 
-        public void EndEdge(Vertex destination)
+        public void EndEdge(VertexVm destination)
         {
             if (NewEdgeSource == null) return;
-            Edges.Add(new Edge(NewEdgeSource, destination));
+            Edges.Add(new EdgeVm(NewEdgeSource, destination));
             NewEdgeSource = null;
         }
 
-        public void DeleteVertex(Vertex v)
+        public void DeleteVertex(VertexVm v)
         {
             foreach (var edge in Edges.ToList())
                 if (edge.End1 == v || edge.End2 == v)
@@ -41,9 +41,9 @@ namespace MyGraph
             Vertices.Remove(v);
         }
 
-        public void DeleteEdge(Edge e) => Edges.Remove(e);
+        public void DeleteEdge(EdgeVm e) => Edges.Remove(e);
 
-        public Graph(ObservableCollection<IVertex> vertices, ObservableCollection<IEdge> edges)
+        public GraphVm(ObservableCollection<IVertex> vertices, ObservableCollection<IEdge> edges)
         {
             Vertices = vertices;
             Edges = edges;

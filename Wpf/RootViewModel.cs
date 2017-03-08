@@ -8,24 +8,24 @@ namespace MyGraph
 {
     public sealed class RootViewModel : PropertyChangedBase, IShell
     {
-        public Graph Graph { get; }
+        public GraphVm Graph { get; }
         public Point LastClickLocation { get; set; } = new Point(100, 100);
         public void Create300() => Create(300);
         public void Create1000() => Create(1000);
 
         public void AddVertex()
         {
-            Graph.Vertices.Add(new Vertex(LastClickLocation));
+            Graph.Vertices.Add(new VertexVm(LastClickLocation));
         }
         private void Create(int num)
         {
             var rnd = new Random();
             for (var i = 0; i < num; i++)
-                Graph.Vertices.Add(new Vertex(new Point(
+                Graph.Vertices.Add(new VertexVm(new Point(
                     rnd.NextDouble() * 500+5,
                     rnd.NextDouble() * 500+5)));
 
-            var edges = Graph.Vertices.Zip(Graph.Vertices.Skip(1), (a, b) => new Edge(a, b));
+            var edges = Graph.Vertices.Zip(Graph.Vertices.Skip(1), (a, b) => new EdgeVm(a, b));
             foreach (var edge in edges)
                 Graph.Edges.Add(edge);
         }
@@ -33,7 +33,7 @@ namespace MyGraph
         
         public RootViewModel()
         {
-            Graph = new Graph(
+            Graph = new GraphVm(
                 new ObservableCollection<IVertex>(), 
                 new ObservableCollection<IEdge>());
             Create(10);

@@ -93,14 +93,14 @@
     </Compile>
     <Compile Include="Control\VertexDragging.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="TestImplementation\Edge.cs" />
+    <Compile Include="UsageExample\EdgeVm.cs" />
     <Compile Include="Utilities\CachingDictionary.cs" />
-    <Compile Include="TestImplementation\Graph.cs" />
+    <Compile Include="UsageExample\GraphVm.cs" />
     <Compile Include="Control\GraphControl.xaml.cs">
       <DependentUpon>GraphControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\IGraph.cs" />
-    <Compile Include="TestImplementation\Vertex.cs" />
+    <Compile Include="UsageExample\VertexVm.cs" />
     <Compile Include="Control\Plot.cs" />
     <Compile Include="Utilities\CallMethodWithOneArgumentAction.cs" />
     <Compile Include="Utilities\Utilities.cs" />
@@ -113,7 +113,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GraphView.xaml">
+    <Page Include="UsageExample\GraphView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

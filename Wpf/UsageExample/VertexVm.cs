@@ -3,7 +3,7 @@ using Caliburn.Micro;
 
 namespace MyGraph
 {
-    public sealed class Vertex : PropertyChangedBase, IVertex
+    public sealed class VertexVm : PropertyChangedBase, IVertex
     {
         private Point _location;
 
@@ -17,7 +17,7 @@ namespace MyGraph
                 NotifyOfPropertyChange();
             }
         }
-        public Vertex(Point location)
+        public VertexVm(Point location)
         {
             Location = location;
         }
