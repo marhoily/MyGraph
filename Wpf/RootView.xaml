@@ -13,42 +13,58 @@
         <TabItem Header="GraphControl">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <Button Content="300 Nodes" cal:Message.Attach="Create300" Margin="3" Padding="15, 2"/>
-                    <Button Content="1000 Nodes" cal:Message.Attach="Create1000" Margin="3" Padding="15, 2"/>
+                    <Button Content="300 Nodes" cal:Message.Attach="Create300" Margin="3" Padding="15, 2" />
+                    <Button Content="1000 Nodes" cal:Message.Attach="Create1000" Margin="3" Padding="15, 2" />
 
                     <TextBlock>
-                        Total nodes: <TextBlock Text="{Binding Graph.Vertices.Count}"/>
+                        Total nodes: <TextBlock Text="{Binding Graph.Vertices.Count}" />
                     </TextBlock>
                     <TextBlock>
-                        Total edges: <TextBlock Text="{Binding Graph.Edges.Count}"/>
+                        Total edges: <TextBlock Text="{Binding Graph.Edges.Count}" />
                     </TextBlock>
                 </StackPanel>
-                <Border  Grid.Column="1" BorderBrush="Bisque" BorderThickness="1">
+                <Border Grid.Column="1" BorderBrush="Bisque" BorderThickness="1">
                     <local:GraphControl Graph="{Binding Graph}"
                                         LastClickLocation="{Binding LastClickLocation, Mode=OneWayToSource}">
                         <local:GraphControl.VertexTemplate>
                             <DataTemplate DataType="local:IVertex">
                                 <Ellipse Width="10" Height="10"
-                                 Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
-                                 local:Plot.X="{Binding Location.X}"
-                                 local:Plot.Y="{Binding Location.Y}" />
+                                         Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
+                                         local:Plot.X="{Binding Location.X}"
+                                         local:Plot.Y="{Binding Location.Y}"
+                                         Tag="{Binding RelativeSource={RelativeSource AncestorType=local:GraphControl}, Path=Graph}">
+                                    <Ellipse.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Start Edge"
+                                                      cal:Action.TargetWithoutContext="{Binding PlacementTarget.(Ellipse.Tag), RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}"
+                                                      cal:Message.Attach="StartEdge($dataContext)" />
+                                        </ContextMenu>
+                                    </Ellipse.ContextMenu>
+                                </Ellipse>
                             </DataTemplate>
                         </local:GraphControl.VertexTemplate>
                         <local:GraphControl.EdgeTemplate>
                             <DataTemplate DataType="local:IEdge">
                                 <Line StrokeThickness="1" Stroke="SaddleBrown"
-                                            X1="{Binding End1.Location.X}" Y1="{Binding End1.Location.Y}"
-                                            X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" />
+                                      X1="{Binding End1.Location.X}" Y1="{Binding End1.Location.Y}"
+                                      X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" />
                             </DataTemplate>
                         </local:GraphControl.EdgeTemplate>
+                        <local:GraphControl.FreeEdgeTemplate>
+                            <DataTemplate DataType="local:GraphFreeEdge">
+                                <Line StrokeThickness="1" Stroke="SaddleBrown"
+                                      X1="{Binding Source.Location.X}" Y1="{Binding Source.Location.Y}"
+                                      X2="{Binding Mouse.X}" Y2="{Binding Mouse.Y}" />
+                            </DataTemplate>
+                        </local:GraphControl.FreeEdgeTemplate>
                         <local:GraphControl.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Add Node"
-                                          cal:Message.Attach="AddNode"/>
+                                          cal:Message.Attach="AddNode" />
                             </ContextMenu>
                         </local:GraphControl.ContextMenu>
                     </local:GraphControl>
@@ -59,7 +75,7 @@
             <local:Plot>
                 <Rectangle local:Plot.X="100" local:Plot.Y="50"
                            Width="160" Height="60" Fill="LawnGreen"
-                           Stroke="DarkGreen" StrokeThickness="1"/>
+                           Stroke="DarkGreen" StrokeThickness="1" />
 
             </local:Plot>
         </TabItem>

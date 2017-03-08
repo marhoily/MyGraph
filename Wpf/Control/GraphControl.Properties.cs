@@ -39,5 +39,14 @@ namespace MyGraph
             get { return (Point) GetValue(LastClickLocationProperty); }
             set { SetValue(LastClickLocationProperty, value); }
         }
+
+        public static readonly DependencyProperty FreeEdgeTemplateProperty = DependencyProperty.Register(
+            "FreeEdgeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
+
+        public DataTemplate FreeEdgeTemplate
+        {
+            get { return (DataTemplate) GetValue(FreeEdgeTemplateProperty); }
+            set { SetValue(FreeEdgeTemplateProperty, value); }
+        }
     }
 }

@@ -8,6 +8,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid Background="White">
         <Canvas x:Name="_edges" />
-        <local:Plot x:Name="_plot" />
+        <local:Plot x:Name="_vertices" />
     </Grid>
 </UserControl>
