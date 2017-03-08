@@ -29,7 +29,7 @@ namespace MyGraph
                 .SubscribeAndApply((o, n) => OnNewEdgeSourceChanged())
                 .Dispose);
 
-            PreviewMouseDown += (s, e) => LastClickLocation = e.GetPosition(this);
+            PreviewMouseDown += (s, e) => Graph?.SetLastClickLocation(e.GetPosition(this));
         }
 
         private void OnNewEdgeSourceChanged()

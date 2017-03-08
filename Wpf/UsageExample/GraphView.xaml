@@ -8,13 +8,12 @@
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     x:Class="MyGraph.GraphView"
     mc:Ignorable="d"
-    d:DesignHeight="530.707" d:DesignWidth="517.14" 
+    d:DesignHeight="530.707" d:DesignWidth="517.14"
     d:DataContext="{d:DesignInstance local:RootViewModel}">
     <x:Code>
         <![CDATA[ public GraphView() { InitializeComponent(); } ]]>
     </x:Code>
-    <local:GraphControl Graph="{Binding Graph}"
-                        LastClickLocation="{Binding LastClickLocation, Mode=OneWayToSource}">
+    <local:GraphControl Graph="{Binding Graph}">
         <local:GraphControl.VertexTemplate>
             <DataTemplate DataType="local:IVertex">
                 <Ellipse Width="10" Height="10"
@@ -72,7 +71,9 @@
         </local:GraphControl.FreeEdgeTemplate>
         <local:GraphControl.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Add Vertex" cal:Message.Attach="AddVertex" />
+                <MenuItem Header="Add Vertex"
+                          cal:Action.TargetWithoutContext="{Binding Graph}"
+                          cal:Message.Attach="AddVertex" />
             </ContextMenu>
         </local:GraphControl.ContextMenu>
     </local:GraphControl>

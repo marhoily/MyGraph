@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using Caliburn.Micro;
 
 namespace MyGraph
@@ -20,6 +21,10 @@ namespace MyGraph
                 NotifyOfPropertyChange();
             }
         }
+
+        private Point _lastClickLocation;
+        public void AddVertex() => Vertices.Add(new VertexVm(_lastClickLocation));
+        public void SetLastClickLocation(Point p) => _lastClickLocation = p;
 
         public void StartEdge(VertexVm source)
         {

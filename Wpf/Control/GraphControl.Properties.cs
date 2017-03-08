@@ -31,15 +31,6 @@ namespace MyGraph
             set { SetValue(EdgeTemplateProperty, value); }
         }
 
-        public static readonly DependencyProperty LastClickLocationProperty = DependencyProperty.Register(
-            "LastClickLocation", typeof(Point), typeof(GraphControl), new PropertyMetadata(default(Point)));
-
-        public Point LastClickLocation
-        {
-            get { return (Point) GetValue(LastClickLocationProperty); }
-            set { SetValue(LastClickLocationProperty, value); }
-        }
-
         public static readonly DependencyProperty FreeEdgeTemplateProperty = DependencyProperty.Register(
             "FreeEdgeTemplate", typeof(DataTemplate), typeof(GraphControl), new PropertyMetadata(default(DataTemplate)));
 
