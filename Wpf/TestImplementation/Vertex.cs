@@ -17,7 +17,6 @@ namespace MyGraph
                 NotifyOfPropertyChange();
             }
         }
-
         public Vertex(Point location)
         {
             Location = location;

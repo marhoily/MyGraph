@@ -36,12 +36,13 @@
                                          Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
                                          local:Plot.X="{Binding Location.X}"
                                          local:Plot.Y="{Binding Location.Y}"
-                                         Tag="{Binding RelativeSource={RelativeSource AncestorType=local:GraphControl}, Path=Graph}">
+                                         Tag="{Binding RelativeSource={RelativeSource AncestorType=local:GraphControl}, Path=Graph}"
+                                         cal:Message.Attach="[Event MouseDown] = [Action EndEdge($dataContext)]">
                                     <Ellipse.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Start Edge"
-                                                      cal:Action.TargetWithoutContext="{Binding PlacementTarget.(Ellipse.Tag), RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}"
-                                                      cal:Message.Attach="StartEdge($dataContext)" />
+                                                    cal:Action.TargetWithoutContext="{Binding PlacementTarget.(Ellipse.Tag), RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}"
+                                                    cal:Message.Attach="StartEdge($dataContext)" />
                                         </ContextMenu>
                                     </Ellipse.ContextMenu>
                                 </Ellipse>
