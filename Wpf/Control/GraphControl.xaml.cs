@@ -36,7 +36,7 @@ namespace MyGraph
 
         private void OnNewEdgeSource()
         {
-            if (Graph.NewEdgeSource != null)
+            if (Graph?.NewEdgeSource != null)
             {
                 CaptureMouse();
                 var graphFreeEdge = new GraphFreeEdge(Graph.NewEdgeSource);

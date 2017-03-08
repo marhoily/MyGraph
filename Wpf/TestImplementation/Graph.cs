@@ -17,7 +17,10 @@ namespace MyGraph
 
         public void EndEdge(Vertex destination)
         {
-            
+            if (NewEdgeSource == null) return;
+            Edges.Add(new Edge(NewEdgeSource, destination));
+            NewEdgeSource = null;
+            NotifyOfPropertyChange(nameof(NewEdgeSource));
         }
 
         public Graph(ObservableCollection<IVertex> vertices, ObservableCollection<IEdge> edges)

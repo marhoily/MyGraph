@@ -51,6 +51,7 @@
       <HintPath>..\packages\JetBrains.Annotations.10.3.0\lib\net\JetBrains.Annotations.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Npc, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Npc.1.0.5\lib\net452\Npc.dll</HintPath>
       <Private>True</Private>
@@ -100,6 +101,7 @@
     <Compile Include="Control\IGraph.cs" />
     <Compile Include="TestImplementation\Vertex.cs" />
     <Compile Include="Control\Plot.cs" />
+    <Compile Include="Utilities\CallMethodWithOneArgumentAction.cs" />
     <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="RootViewModel.cs" />
     <Compile Include="App.xaml.cs">
