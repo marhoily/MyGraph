@@ -1,5 +1,4 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Caliburn.Micro;
@@ -8,11 +7,15 @@ namespace MyGraph
 {
     public sealed class RootViewModel : PropertyChangedBase, IShell
     {
-        public GraphVm Graph { get; }
-        public Point LastClickLocation { get; set; } = new Point(100, 100);
+        public GraphVm Graph { get; } = new GraphVm();
+
         public void Create300() => Create(300);
         public void Create1000() => Create(1000);
 
+        public RootViewModel()
+        {
+            Create(10);
+        }
 
         private void Create(int num)
         {
@@ -25,15 +28,6 @@ namespace MyGraph
             var edges = Graph.Vertices.Zip(Graph.Vertices.Skip(1), (a, b) => new EdgeVm(a, b));
             foreach (var edge in edges)
                 Graph.Edges.Add(edge);
-        }
-
-        
-        public RootViewModel()
-        {
-            Graph = new GraphVm(
-                new ObservableCollection<IVertex>(), 
-                new ObservableCollection<IEdge>());
-            Create(10);
         }
     }
 }

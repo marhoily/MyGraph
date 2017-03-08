@@ -7,8 +7,8 @@ namespace MyGraph
 {
     public sealed class GraphVm : PropertyChangedBase, IGraph
     {
-        public ObservableCollection<IVertex> Vertices { get; }
-        public ObservableCollection<IEdge> Edges { get; }
+        public ObservableCollection<IVertex> Vertices { get; } = new ObservableCollection<IVertex>();
+        public ObservableCollection<IEdge> Edges { get; } = new ObservableCollection<IEdge>();
 
         private IVertex _newEdgeSource;
         public IVertex NewEdgeSource
@@ -47,12 +47,6 @@ namespace MyGraph
         }
 
         public void DeleteEdge(EdgeVm e) => Edges.Remove(e);
-
-        public GraphVm(ObservableCollection<IVertex> vertices, ObservableCollection<IEdge> edges)
-        {
-            Vertices = vertices;
-            Edges = edges;
-        }
 
     }
 }
