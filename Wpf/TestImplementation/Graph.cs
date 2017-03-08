@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using Caliburn.Micro;
 
 namespace MyGraph
@@ -30,6 +31,14 @@ namespace MyGraph
             if (NewEdgeSource == null) return;
             Edges.Add(new Edge(NewEdgeSource, destination));
             NewEdgeSource = null;
+        }
+
+        public void DeleteVertex(Vertex v)
+        {
+            foreach (var edge in Edges.ToList())
+                if (edge.End1 == v || edge.End2 == v)
+                    Edges.Remove(edge);
+            Vertices.Remove(v);
         }
 
         public Graph(ObservableCollection<IVertex> vertices, ObservableCollection<IEdge> edges)
