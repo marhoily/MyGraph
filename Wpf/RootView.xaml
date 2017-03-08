@@ -43,8 +43,7 @@
                                          Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
                                          local:Plot.X="{Binding Location.X}"
                                          local:Plot.Y="{Binding Location.Y}"
-                                         Tag="{Binding Graph, RelativeSource={RelativeSource AncestorType={x:Type local:GraphControl}}}"
-                                         >
+                                         Tag="{Binding Graph, RelativeSource={RelativeSource AncestorType={x:Type local:GraphControl}}}">
                                     <Ellipse.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Start Edge"
@@ -68,9 +67,18 @@
                         </local:GraphControl.VertexTemplate>
                         <local:GraphControl.EdgeTemplate>
                             <DataTemplate DataType="local:IEdge">
-                                <Line StrokeThickness="1" Stroke="SaddleBrown"
+                                <Line StrokeThickness="10" Stroke="SaddleBrown"
                                       X1="{Binding End1.Location.X}" Y1="{Binding End1.Location.Y}"
-                                      X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" />
+                                      X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" 
+                                      Tag="{Binding Graph, RelativeSource={RelativeSource AncestorType={x:Type local:GraphControl}}}">
+                                    <Line.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Delete"
+                                                    cal:Action.TargetWithoutContext="{Binding PlacementTarget.(FrameworkElement.Tag), RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}, Mode=FindAncestor}}"
+                                                    cal:Message.Attach="DeleteEdge($dataContext)" />
+                                        </ContextMenu>
+                                    </Line.ContextMenu>
+                                </Line>
                             </DataTemplate>
                         </local:GraphControl.EdgeTemplate>
                         <local:GraphControl.FreeEdgeTemplate>

@@ -41,6 +41,8 @@ namespace MyGraph
             Vertices.Remove(v);
         }
 
+        public void DeleteEdge(Edge e) => Edges.Remove(e);
+
         public Graph(ObservableCollection<IVertex> vertices, ObservableCollection<IEdge> edges)
         {
             Vertices = vertices;
