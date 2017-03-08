@@ -6,7 +6,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:cal="http://www.caliburnproject.org"
     mc:Ignorable="d" Width="640" Height="590"
+    x:Class="MyGraph.RootView"
     d:DataContext="{d:DesignInstance {x:Type local:RootViewModel}}">
+    <x:Code>
+        <![CDATA[ public RootView(){ InitializeComponent();} ]]>
+    </x:Code>
     <TabControl>
         <TabItem Header="GraphControl">
             <Grid>
@@ -32,7 +36,7 @@
                     </TextBlock>
                 </StackPanel>
                 <Border Grid.Column="1" BorderBrush="Bisque" BorderThickness="1">
-                    <local:MapView/>
+                    <local:GraphView />
                 </Border>
             </Grid>
         </TabItem>

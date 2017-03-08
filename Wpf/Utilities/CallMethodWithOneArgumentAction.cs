@@ -52,9 +52,7 @@ namespace MyGraph
 
         private static void OnNeedsMethodInfoUpdated(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var action = d as CallMethodWithOneArgumentAction;
-            if (action != null)
-                action.UpdateMethodInfo();
+            (d as CallMethodWithOneArgumentAction)?.UpdateMethodInfo();
         }
 
         protected override void OnAttached()
@@ -80,7 +78,8 @@ namespace MyGraph
 
             // Pick the best method to call given the parameter we want to pass.
             var methodToCall = _methods.FirstOrDefault(method =>
-                methodParam != null && method.ParameterInfo.ParameterType.IsAssignableFrom(methodParam.GetType()));
+                methodParam != null &&
+                method.ParameterInfo.ParameterType.IsInstanceOfType(methodParam));
 
             if (methodToCall == null)
                 throw new InvalidOperationException("No suitable method found.");
@@ -95,10 +94,9 @@ namespace MyGraph
             if (target == null || string.IsNullOrEmpty(MethodName))
                 return;
 
-            // Find all unary methods with the given name.
+            // Find all methods with one argument and with the given name.
             var flags = BindingFlags.Public | BindingFlags.Instance;
-            if (AllowNonPublicMethods)
-                flags |= BindingFlags.NonPublic;
+            if (AllowNonPublicMethods) flags |= BindingFlags.NonPublic;
 
             foreach (var methodInfo in target.GetType().GetMethods(flags))
                 if (methodInfo.Name == MethodName)
