@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using Caliburn.Micro;
 using Npc;
 
@@ -6,8 +8,6 @@ namespace MyGraph
 {
     public partial class GraphControl
     {
-        private FrameworkElement _freeEdge;
-
         public GraphControl()
         {
             InitializeComponent();
@@ -36,28 +36,23 @@ namespace MyGraph
 
         private void OnNewEdgeSource()
         {
-            if (Graph?.NewEdgeSource != null)
-            {
-                var graphFreeEdge = new GraphFreeEdge(Graph.NewEdgeSource);
-                MouseMove += (s, e) => graphFreeEdge.Mouse = e.GetPosition(this);
-                MouseDown += (s, e) => Graph.NewEdgeSource = null;
-                _freeEdge = FreeEdgeTemplate.LoadContent()
-                    .Cast<FrameworkElement>()
-                    .BindModel(graphFreeEdge);
-                _edges.Children.Add(_freeEdge);
-            }
-            else
-            {
-                _edges.Children.Remove(_freeEdge);
-                _freeEdge = null;
-            }
+            if (Graph?.NewEdgeSource == null) return;
+            var freeEdge = FreeEdgeTemplate.LoadContent().Cast<FrameworkElement>();
+            var graphFreeEdge = new GraphFreeEdge(this, Graph, _edges, freeEdge);
+            freeEdge.BindModel(graphFreeEdge);
+            MouseMove += graphFreeEdge.OnMouseMove;
+            MouseDown += graphFreeEdge.OnMouseDown;
         }
     }
 
     public sealed class GraphFreeEdge : PropertyChangedBase
     {
+        private readonly GraphControl _graphControl;
+        private readonly IGraph _graph;
+        private readonly Canvas _edges;
+        private readonly FrameworkElement _freeEdge;
         private Point _mouse;
-        public IVertex Source { get; }
+        public IVertex Source => _graph.NewEdgeSource;
 
         public Point Mouse
         {
@@ -70,10 +65,26 @@ namespace MyGraph
             }
         }
 
-        public GraphFreeEdge(IVertex source)
+        public GraphFreeEdge(GraphControl graphControl, IGraph graph, Canvas edges, FrameworkElement freeEdge)
         {
-            Source = source;
+            _graphControl = graphControl;
+            _graph = graph;
+            _edges = edges;
+            _freeEdge = freeEdge;
+            _edges.Children.Add(_freeEdge);
+        }
+
+        public void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            Mouse = e.GetPosition(_graphControl);
+        }
+
+        public void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _graph.NewEdgeSource = null;
+            _edges.Children.Remove(_freeEdge);
+            _graphControl.MouseMove -= OnMouseMove;
+            _graphControl.MouseDown -= OnMouseDown;
         }
     }
-
 }
