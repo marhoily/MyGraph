@@ -6,7 +6,6 @@
              xmlns:myGraph="clr-namespace:MyGraph"
              xmlns:windowsPresentation="clr-namespace:GMap.NET.WindowsPresentation;assembly=GMap.NET.WindowsPresentation"
              mc:Ignorable="d"
-             Loaded="MapView_OnLoaded"
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{d:DesignInstance myGraph:MapViewModel}">
     <Grid>

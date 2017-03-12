@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Windows;
-using GMap.NET;
+﻿using GMap.NET;
 using GMap.NET.MapProviders;
 
 namespace MyGraph
@@ -19,12 +15,5 @@ namespace MyGraph
             _gMapControl.Zoom = 7;
         }
 
-        private async void MapView_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            
-            await Task.Delay(TimeSpan.FromSeconds(1));
-            _gMapControl.Zoom = 9;
-            Debug.WriteLine(_gMapControl.MapProvider.Projection?.ToString() ?? "<null>");
-        }
     }
 }
