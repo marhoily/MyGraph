@@ -1,13 +1,13 @@
-using System.Windows;
 using Caliburn.Micro;
+using GMap.NET;
 
 namespace MyGraph
 {
     public sealed class VertexVm : PropertyChangedBase, IVertex
     {
-        private Point _location;
+        private PointLatLng _location;
 
-        public Point Location
+        public PointLatLng Location
         {
             get { return _location; }
             set
@@ -17,7 +17,7 @@ namespace MyGraph
                 NotifyOfPropertyChange();
             }
         }
-        public VertexVm(Point location)
+        public VertexVm(PointLatLng location)
         {
             Location = location;
         }

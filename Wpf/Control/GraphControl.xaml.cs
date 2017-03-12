@@ -1,9 +1,18 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
+using GMap.NET;
 using Npc;
 
 namespace MyGraph
 {
+    public interface IViewPort
+    {
+        PointLatLng FromLocalToLatLng(Point p);
+        Point FromLatLngToLocal(PointLatLng point);
+        event Action Changed;
+    }
+
     public partial class GraphControl
     {
         public GraphControl()
@@ -29,7 +38,10 @@ namespace MyGraph
                 .SubscribeAndApply((o, n) => OnNewEdgeSourceChanged())
                 .Dispose);
 
-            PreviewMouseDown += (s, e) => Graph?.SetLastClickLocation(e.GetPosition(this));
+            PreviewMouseDown += (s, e) =>
+                Graph?.SetLastClickLocation(ViewPort.FromLocalToLatLng(e.GetPosition(this)));
+
+            this.Track(x => x.ViewPort).SubscribeAndApply((o, n) => _vertices.ViewPort = n);
         }
 
         private void OnNewEdgeSourceChanged()

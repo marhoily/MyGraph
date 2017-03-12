@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using System.Windows;
 using Caliburn.Micro;
+using GMap.NET;
 using JetBrains.Annotations;
 
 namespace MyGraph
@@ -29,9 +29,10 @@ namespace MyGraph
             var rnd = new Random();
             var vertices = Map.Graph.Vertices;
             for (var i = 0; i < num; i++)
-                vertices.Add(new VertexVm(new Point(
-                    rnd.NextDouble() * 500+5,
-                    rnd.NextDouble() * 500+5)));
+                vertices.Add(new VertexVm(new PointLatLng(
+                    rnd.NextDouble() * 3+52,
+                    rnd.NextDouble() * 5+26)));
+            //_gMapControl.Position = new PointLatLng(53.856, 27.49);
 
             foreach (var edge in vertices.Zip(vertices.Skip(1), (a, b) => new EdgeVm(a, b)))
                 Map.Graph.Edges.Add(edge);

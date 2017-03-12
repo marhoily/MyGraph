@@ -39,5 +39,14 @@ namespace MyGraph
             get { return (DataTemplate) GetValue(FreeEdgeTemplateProperty); }
             set { SetValue(FreeEdgeTemplateProperty, value); }
         }
+
+        public static readonly DependencyProperty ViewPortProperty = DependencyProperty.Register(
+            "ViewPort", typeof(IViewPort), typeof(GraphControl), new PropertyMetadata(default(IViewPort)));
+
+        public IViewPort ViewPort
+        {
+            get { return (IViewPort) GetValue(ViewPortProperty); }
+            set { SetValue(ViewPortProperty, value); }
+        }
     }
 }

@@ -10,6 +10,6 @@
              d:DataContext="{d:DesignInstance myGraph:MapViewModel}">
     <Grid>
         <windowsPresentation:GMapControl x:Name="_gMapControl"/>
-        <myGraph:GraphView />
+        <myGraph:GraphView x:Name="_graphView"/>
     </Grid>
 </UserControl>

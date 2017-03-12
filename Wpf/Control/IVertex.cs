@@ -1,10 +1,10 @@
 using System.ComponentModel;
-using System.Windows;
+using GMap.NET;
 
 namespace MyGraph
 {
     public interface IVertex : INotifyPropertyChanged
     {
-        Point Location { get; set; }
+        PointLatLng Location { get; set; }
     }
 }

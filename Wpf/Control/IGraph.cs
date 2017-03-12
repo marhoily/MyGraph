@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows;
+using GMap.NET;
 
 namespace MyGraph
 {
@@ -10,6 +10,6 @@ namespace MyGraph
         ObservableCollection<IEdge> Edges { get; }
 
         IVertex NewEdgeSource { get; set; }
-        void SetLastClickLocation(Point p);
+        void SetLastClickLocation(PointLatLng p);
     }
 }

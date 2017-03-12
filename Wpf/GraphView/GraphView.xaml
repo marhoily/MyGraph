@@ -13,13 +13,12 @@
     <x:Code>
         <![CDATA[ public GraphView() { InitializeComponent(); } ]]>
     </x:Code>
-    <local:GraphControl Graph="{Binding Graph}">
+    <local:GraphControl Graph="{Binding Graph}" x:Name="_control" x:FieldModifier="public">
         <local:GraphControl.VertexTemplate>
             <DataTemplate DataType="local:IVertex">
                 <Ellipse Width="10" Height="10"
                          Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
-                         local:Plot.X="{Binding Location.X}"
-                         local:Plot.Y="{Binding Location.Y}"
+                         local:Plot.Location="{Binding Location}"
                          Tag="{Binding Graph, RelativeSource={RelativeSource AncestorType={x:Type local:GraphControl}}}">
                     <Ellipse.ContextMenu>
                         <ContextMenu>
@@ -54,18 +53,18 @@
                     </Grid.ContextMenu>
                     <!-- Makes the edge wider for click -->
                     <Line StrokeThickness="5" Stroke="Transparent"
-                          X1="{Binding End1.Location.X}" Y1="{Binding End1.Location.Y}"
-                          X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" />
+                          X1="{Binding End1.Location.Lng}" Y1="{Binding End1.Location.Lat}"
+                          X2="{Binding End2.Location.Lng}" Y2="{Binding End2.Location.Lat}" />
                     <Line StrokeThickness="1" Stroke="SaddleBrown"
-                          X1="{Binding End1.Location.X}" Y1="{Binding End1.Location.Y}"
-                          X2="{Binding End2.Location.X}" Y2="{Binding End2.Location.Y}" />
+                          X1="{Binding End1.Location.Lng}" Y1="{Binding End1.Location.Lat}"
+                          X2="{Binding End2.Location.Lng}" Y2="{Binding End2.Location.Lat}" />
                 </Grid>
             </DataTemplate>
         </local:GraphControl.EdgeTemplate>
         <local:GraphControl.FreeEdgeTemplate>
             <DataTemplate DataType="local:GraphFreeEdge">
                 <Line StrokeThickness="1" Stroke="SaddleBrown"
-                      X1="{Binding Source.Location.X}" Y1="{Binding Source.Location.Y}"
+                      X1="{Binding Source.Location.Lng}" Y1="{Binding Source.Location.Lat}"
                       X2="{Binding Mouse.X}" Y2="{Binding Mouse.Y}" />
             </DataTemplate>
         </local:GraphControl.FreeEdgeTemplate>

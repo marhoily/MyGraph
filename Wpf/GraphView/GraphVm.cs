@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using Caliburn.Micro;
+using GMap.NET;
 using JetBrains.Annotations;
 
 namespace MyGraph
@@ -12,8 +12,8 @@ namespace MyGraph
         public ObservableCollection<IVertex> Vertices { get; } = new ObservableCollection<IVertex>();
         public ObservableCollection<IEdge> Edges { get; } = new ObservableCollection<IEdge>();
 
-        private Point _lastClickLocation;
-        public void SetLastClickLocation(Point p) => _lastClickLocation = p;
+        private PointLatLng _lastClickLocation;
+        public void SetLastClickLocation(PointLatLng p) => _lastClickLocation = p;
         public void AddVertex() => Vertices.Add(new VertexVm(_lastClickLocation));
 
         private IVertex _newEdgeSource;

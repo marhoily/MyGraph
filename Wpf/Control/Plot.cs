@@ -1,36 +1,47 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using static System.Windows.FrameworkPropertyMetadataOptions;
+using GMap.NET;
 
 namespace MyGraph
 {
     public sealed class Plot : Panel
     {
-        public static readonly DependencyProperty XProperty = DependencyProperty.RegisterAttached(
-            "X", typeof(double), typeof(Plot), new FrameworkPropertyMetadata(0.0, AffectsParentArrange));
+        public static readonly DependencyProperty LocationProperty = DependencyProperty.RegisterAttached(
+            "Location", typeof(PointLatLng), typeof(Plot), new PropertyMetadata(default(PointLatLng)));
 
-        public static void SetX(DependencyObject element, double value)
+        public static void SetLocation(DependencyObject element, PointLatLng value)
         {
-            element.SetValue(XProperty, value);
+            element.SetValue(LocationProperty, value);
         }
 
-        public static double GetX(DependencyObject element)
+        public static PointLatLng GetLocation(DependencyObject element)
         {
-            return (double) element.GetValue(XProperty);
+            return (PointLatLng) element.GetValue(LocationProperty);
+        }
+     
+        public static readonly DependencyProperty ViewPortProperty = DependencyProperty.Register(
+            "ViewPort", typeof(IViewPort), typeof(Plot), new PropertyMetadata(default(IViewPort), ViewPortPropertyChangedCallback));
+
+        private static void ViewPortPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            var plot = (Plot)dependencyObject;
+            var oldValue = (IViewPort)dependencyPropertyChangedEventArgs.OldValue;
+            if (oldValue != null)
+            {
+                oldValue.Changed -= plot.InvalidateArrange;
+            }
+            var newValue = (IViewPort)dependencyPropertyChangedEventArgs.NewValue;
+            if (newValue != null)
+            {
+                newValue.Changed += plot.InvalidateArrange;
+            }
         }
 
-        public static readonly DependencyProperty YProperty = DependencyProperty.RegisterAttached(
-            "Y", typeof(double), typeof(Plot), new FrameworkPropertyMetadata(0.0, AffectsParentArrange));
-
-        public static void SetY(DependencyObject element, double value)
+        public IViewPort ViewPort
         {
-            element.SetValue(YProperty, value);
-        }
-
-        public static double GetY(DependencyObject element)
-        {
-            return (double) element.GetValue(YProperty);
+            get { return (IViewPort)GetValue(ViewPortProperty); }
+            set { SetValue(ViewPortProperty, value); }
         }
 
         protected override Size MeasureOverride(Size availableSize)
@@ -40,14 +51,14 @@ namespace MyGraph
                 internalChild?.Measure(infinity);
             return new Size();
         }
-
         protected override Size ArrangeOverride(Size arrangeSize)
         {
             foreach (var internalChild in InternalChildren.OfType<UIElement>())
             {
                 var desiredSize = internalChild.DesiredSize;
-                var x = GetX(internalChild) - desiredSize.Width /2;
-                var y = GetY(internalChild) - desiredSize.Height /2;
+                var p = ViewPort.FromLatLngToLocal(GetLocation(internalChild));
+                var x = p.X - desiredSize.Width /2;
+                var y = p.Y - desiredSize.Height /2;
                 internalChild.Arrange(new Rect(new Point(x, y), desiredSize));
             }
             return arrangeSize;

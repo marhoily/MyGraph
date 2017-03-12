@@ -36,12 +36,12 @@ namespace MyGraph
 
         private sealed class DragState
         {
-            private readonly FrameworkElement _map;
+            private readonly GraphControl _map;
             private readonly Point _start;
             private readonly IVertex _vertex;
             private bool _started;
 
-            public DragState(FrameworkElement map,
+            public DragState(GraphControl map,
                 FrameworkElement control, MouseEventArgs e)
             {
                 _map = map;
@@ -53,7 +53,7 @@ namespace MyGraph
             {
                 var p = e.GetPosition(_map);
                 _started = _started || Point.Subtract(_start, p).Length > 10;
-                if (_started) _vertex.Location = p;
+                if (_started) _vertex.Location = _map.ViewPort.FromLocalToLatLng(p);
             }
         }
     }

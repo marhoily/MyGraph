@@ -41,14 +41,7 @@
                 </Border>
             </Grid>
         </TabItem>
-        <TabItem Header="Plot">
-            <local:Plot>
-                <Rectangle local:Plot.X="100" local:Plot.Y="50"
-                           Width="160" Height="60" Fill="LawnGreen"
-                           Stroke="DarkGreen" StrokeThickness="1" />
 
-            </local:Plot>
-        </TabItem>
     </TabControl>
 
 </Window>
