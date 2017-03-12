@@ -107,6 +107,7 @@
     <Compile Include="MapView\MapView.xaml.cs">
       <DependentUpon>MapView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MapView\ViewPort.cs" />
     <Compile Include="Utilities\CachingDictionary.cs" />
     <Compile Include="GraphView\GraphVm.cs" />
     <Compile Include="Control\GraphControl.xaml.cs">
