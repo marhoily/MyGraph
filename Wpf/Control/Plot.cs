@@ -56,10 +56,9 @@ namespace MyGraph
             foreach (var internalChild in InternalChildren.OfType<UIElement>())
             {
                 var desiredSize = internalChild.DesiredSize;
-                var p = ViewPort.FromLatLngToLocal(GetLocation(internalChild));
-                var x = p.X - desiredSize.Width /2;
-                var y = p.Y - desiredSize.Height /2;
-                internalChild.Arrange(new Rect(new Point(x, y), desiredSize));
+                var localPosition = ViewPort.FromLatLngToLocal(GetLocation(internalChild));
+                var center = localPosition - (Vector)desiredSize/2.0;
+                internalChild.Arrange(new Rect(center, desiredSize));
             }
             return arrangeSize;
         }

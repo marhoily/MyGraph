@@ -1,18 +1,9 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
-using GMap.NET;
 using Npc;
 
 namespace MyGraph
 {
-    public interface IViewPort
-    {
-        PointLatLng FromLocalToLatLng(Point p);
-        Point FromLatLngToLocal(PointLatLng point);
-        event Action Changed;
-    }
-
     public partial class GraphControl
     {
         public GraphControl()

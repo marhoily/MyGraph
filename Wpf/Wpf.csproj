@@ -99,6 +99,7 @@
     <Compile Include="Control\IVertex.cs">
       <DependentUpon>IGraph.cs</DependentUpon>
     </Compile>
+    <Compile Include="Control\IViewPort.cs" />
     <Compile Include="Control\VertexDragging.cs" />
     <Compile Include="IShell.cs" />
     <Compile Include="GraphView\EdgeVm.cs" />
