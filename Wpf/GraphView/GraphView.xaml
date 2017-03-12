@@ -9,7 +9,7 @@
     x:Class="MyGraph.GraphView"
     mc:Ignorable="d"
     d:DesignHeight="530.707" d:DesignWidth="517.14"
-    d:DataContext="{d:DesignInstance local:RootViewModel}">
+    d:DataContext="{d:DesignInstance local:MapViewModel}">
     <x:Code>
         <![CDATA[ public GraphView() { InitializeComponent(); } ]]>
     </x:Code>

@@ -25,18 +25,19 @@
                     <TextBlock>
                         <Run Text="Total nodes: " />
                         <InlineUIContainer>
-                            <TextBlock Text="{Binding Graph.Vertices.Count}" />
+                            <TextBlock Text="{Binding Map.Graph.Vertices.Count}" />
                         </InlineUIContainer>
                     </TextBlock>
                     <TextBlock>
                         <Run Text="Total edges: " />
                         <InlineUIContainer>
-                            <TextBlock Text="{Binding Graph.Edges.Count}" />
+                            <TextBlock Text="{Binding Map.Graph.Edges.Count}" />
                         </InlineUIContainer>
                     </TextBlock>
+                    <Button cal:Message.Attach="ChangeZoom" Content="Reset zoom"/>
                 </StackPanel>
                 <Border Grid.Column="1" BorderBrush="Bisque" BorderThickness="1">
-                    <local:GraphView />
+                    <local:MapView DataContext="{Binding Map}"/>
                 </Border>
             </Grid>
         </TabItem>

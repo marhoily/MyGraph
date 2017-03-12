@@ -47,6 +47,14 @@
       <HintPath>..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="GMap.NET.Core, Version=1.7.5.0, Culture=neutral, PublicKeyToken=b85b9027b614afef, processorArchitecture=MSIL">
+      <HintPath>..\packages\GMap.NET.Presentation.1.7.5\lib\net40\GMap.NET.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GMap.NET.WindowsPresentation, Version=1.7.5.0, Culture=neutral, PublicKeyToken=b85b9027b614afef, processorArchitecture=MSIL">
+      <HintPath>..\packages\GMap.NET.Presentation.1.7.5\lib\net40\GMap.NET.WindowsPresentation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="JetBrains.Annotations, Version=10.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>..\packages\JetBrains.Annotations.10.3.0\lib\net\JetBrains.Annotations.dll</HintPath>
       <Private>True</Private>
@@ -93,14 +101,18 @@
     </Compile>
     <Compile Include="Control\VertexDragging.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="UsageExample\EdgeVm.cs" />
+    <Compile Include="GraphView\EdgeVm.cs" />
+    <Compile Include="MapView\MapViewModel.cs" />
+    <Compile Include="MapView\MapView.xaml.cs">
+      <DependentUpon>MapView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\CachingDictionary.cs" />
-    <Compile Include="UsageExample\GraphVm.cs" />
+    <Compile Include="GraphView\GraphVm.cs" />
     <Compile Include="Control\GraphControl.xaml.cs">
       <DependentUpon>GraphControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\IGraph.cs" />
-    <Compile Include="UsageExample\VertexVm.cs" />
+    <Compile Include="GraphView\VertexVm.cs" />
     <Compile Include="Control\Plot.cs" />
     <Compile Include="Utilities\CallMethodWithOneArgumentAction.cs" />
     <Compile Include="Utilities\Utilities.cs" />
@@ -113,7 +125,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UsageExample\GraphView.xaml">
+    <Page Include="GraphView\GraphView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MapView\MapView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
