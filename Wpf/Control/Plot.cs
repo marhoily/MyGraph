@@ -31,11 +31,13 @@ namespace MyGraph
             if (oldValue != null)
             {
                 oldValue.Changed -= plot.InvalidateArrange;
+                oldValue.Changed -= plot.UpdateLinePositions;
             }
             var newValue = (IViewPort)dependencyPropertyChangedEventArgs.NewValue;
             if (newValue != null)
             {
                 newValue.Changed += plot.InvalidateArrange;
+                newValue.Changed += plot.UpdateLinePositions;
             }
         }
 
@@ -43,6 +45,33 @@ namespace MyGraph
         {
             get { return (IViewPort)GetValue(ViewPortProperty); }
             set { SetValue(ViewPortProperty, value); }
+        }
+
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var infinity = new Size(double.PositiveInfinity, double.PositiveInfinity);
+            foreach (UIElement internalChild in InternalChildren)
+                internalChild?.Measure(infinity);
+            return new Size();
+        }
+        protected override Size ArrangeOverride(Size arrangeSize)
+        {
+            foreach (var internalChild in InternalChildren.OfType<UIElement>())
+            {
+                var desiredSize = internalChild.DesiredSize;
+                if (internalChild is Panel)
+                {
+                    internalChild.Arrange(new Rect(new Point(0, 0), desiredSize));
+                }
+                else
+                {
+                    var localPosition = ViewPort.FromLatLngToLocal(GetLocation(internalChild));
+                    var center = localPosition - (Vector)desiredSize / 2.0;
+                    internalChild.Arrange(new Rect(center, desiredSize));
+                }
+            }
+            return arrangeSize;
         }
 
         public static readonly DependencyProperty LineStartProperty = DependencyProperty.RegisterAttached(
@@ -90,34 +119,9 @@ namespace MyGraph
             line.Y2 = point.Y;
         }
 
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo) => UpdateLinePositions();
 
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            var infinity = new Size(double.PositiveInfinity, double.PositiveInfinity);
-            foreach (UIElement internalChild in InternalChildren)
-                internalChild?.Measure(infinity);
-            return new Size();
-        }
-        protected override Size ArrangeOverride(Size arrangeSize)
-        {
-            foreach (var internalChild in InternalChildren.OfType<UIElement>())
-            {
-                var desiredSize = internalChild.DesiredSize;
-                if (internalChild is Panel)
-                {
-                    internalChild.Arrange(new Rect(new Point(0, 0), desiredSize));
-                }
-                else
-                {
-                    var localPosition = ViewPort.FromLatLngToLocal(GetLocation(internalChild));
-                    var center = localPosition - (Vector)desiredSize / 2.0;
-                    internalChild.Arrange(new Rect(center, desiredSize));
-                }
-            }
-            return arrangeSize;
-        }
-
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        private void UpdateLinePositions()
         {
             foreach (var line in this.Descendants().OfType<Line>())
             {
