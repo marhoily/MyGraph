@@ -32,7 +32,11 @@ namespace MyGraph
             PreviewMouseDown += (s, e) =>
                 Graph?.SetLastClickLocation(ViewPort.FromLocalToLatLng(e.GetPosition(this)));
 
-            this.Track(x => x.ViewPort).SubscribeAndApply((o, n) => _vertices.ViewPort = n);
+            this.Track(x => x.ViewPort).SubscribeAndApply((o, n) =>
+            {
+                _vertices.ViewPort = n;
+                _edges.ViewPort = n;
+            });
         }
 
         private void OnNewEdgeSourceChanged()

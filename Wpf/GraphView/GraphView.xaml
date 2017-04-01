@@ -53,11 +53,11 @@
                     </Grid.ContextMenu>
                     <!-- Makes the edge wider for click -->
                     <Line StrokeThickness="5" Stroke="Transparent"
-                          X1="{Binding End1.Location.Lng}" Y1="{Binding End1.Location.Lat}"
-                          X2="{Binding End2.Location.Lng}" Y2="{Binding End2.Location.Lat}" />
+                          local:Plot.LineStart="{Binding End1.Location}" 
+                          local:Plot.LineEnd="{Binding End2.Location}" />
                     <Line StrokeThickness="1" Stroke="SaddleBrown"
-                          X1="{Binding End1.Location.Lng}" Y1="{Binding End1.Location.Lat}"
-                          X2="{Binding End2.Location.Lng}" Y2="{Binding End2.Location.Lat}" />
+                          local:Plot.LineStart="{Binding End1.Location}" 
+                          local:Plot.LineEnd="{Binding End2.Location}"  />
                 </Grid>
             </DataTemplate>
         </local:GraphControl.EdgeTemplate>

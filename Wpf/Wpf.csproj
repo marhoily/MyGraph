@@ -93,6 +93,7 @@
       <DependentUpon>GraphControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\GraphFreeEdge.cs" />
+    <Compile Include="Control\HierarchyExtensions.cs" />
     <Compile Include="Control\IEdge.cs">
       <DependentUpon>IGraph.cs</DependentUpon>
     </Compile>
