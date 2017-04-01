@@ -41,17 +41,18 @@ namespace MyGraph
             var graphFreeEdge = new GraphFreeEdge(this, Graph);
             var freeEdge = FreeEdgeTemplate.LoadContent()
                 .Cast<FrameworkElement>().BindModel(graphFreeEdge);
-            MouseMove += graphFreeEdge.OnMouseMove;
+            var root = this.Parent<Window>();
+            root.MouseMove += graphFreeEdge.OnMouseMove;
             _plot.Children.Add(freeEdge);
             MouseButtonEventHandler clean = null;
             clean = (s, e) =>
             {
                 Graph.NewEdgeSource = null;
                 _plot.Children.Remove(freeEdge);
-                MouseMove -= graphFreeEdge.OnMouseMove;
-                MouseDown -= clean;
+                root.MouseMove -= graphFreeEdge.OnMouseMove;
+                root.MouseDown -= clean;
             };
-            MouseDown += clean;
+            root.MouseDown += clean;
         }
     }
 }

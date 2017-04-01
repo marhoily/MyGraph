@@ -61,7 +61,7 @@ namespace MyGraph
             foreach (var internalChild in InternalChildren.OfType<UIElement>())
             {
                 var desiredSize = internalChild.DesiredSize;
-                if (internalChild is Panel)
+                if (internalChild is Panel || internalChild is Line)
                 {
                     internalChild.Arrange(new Rect(new Point(0, 0), desiredSize));
                 }

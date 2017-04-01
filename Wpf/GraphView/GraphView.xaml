@@ -66,8 +66,8 @@
         <local:GraphControl.FreeEdgeTemplate>
             <DataTemplate DataType="local:GraphFreeEdge">
                 <Line StrokeThickness="1" Stroke="SaddleBrown"
-                      X1="{Binding Source.Location.Lng}" Y1="{Binding Source.Location.Lat}"
-                      X2="{Binding Mouse.X}" Y2="{Binding Mouse.Y}" />
+                      local:Plot.LineStart="{Binding Source.Location}" 
+                      local:Plot.LineEnd="{Binding Mouse}" />
             </DataTemplate>
         </local:GraphControl.FreeEdgeTemplate>
     </local:GraphControl>

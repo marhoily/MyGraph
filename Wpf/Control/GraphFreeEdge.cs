@@ -1,6 +1,6 @@
-﻿using System.Windows;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Caliburn.Micro;
+using GMap.NET;
 
 namespace MyGraph
 {
@@ -10,7 +10,7 @@ namespace MyGraph
         private readonly IGraph _graph;
 
         public IVertex Source => _graph.NewEdgeSource;
-        public Point Mouse { get; private set; }
+        public PointLatLng Mouse { get; private set; }
 
         public GraphFreeEdge(GraphControl graphControl, IGraph graph)
         {
@@ -20,7 +20,7 @@ namespace MyGraph
 
         public void OnMouseMove(object sender, MouseEventArgs e)
         {
-            Mouse = e.GetPosition(_graphControl);
+            Mouse = _graphControl.ViewPort.FromLocalToLatLng(e.GetPosition(_graphControl));
             NotifyOfPropertyChange(nameof(Mouse));
         }
     }

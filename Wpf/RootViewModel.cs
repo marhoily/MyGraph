@@ -16,7 +16,7 @@ namespace MyGraph
 
         public RootViewModel()
         {
-            Create(10);
+            Create(1);
         }
 
         public void ChangeZoom()
