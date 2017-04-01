@@ -3,13 +3,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 using GMap.NET;
+using static System.Windows.FrameworkPropertyMetadataOptions;
 
 namespace MyGraph
 {
     public sealed class Plot : Panel
     {
         public static readonly DependencyProperty LocationProperty = DependencyProperty.RegisterAttached(
-            "Location", typeof(PointLatLng), typeof(Plot), new PropertyMetadata(default(PointLatLng)));
+            "Location", typeof(PointLatLng), typeof(Plot), new FrameworkPropertyMetadata(default(PointLatLng), AffectsParentArrange));
 
         public static void SetLocation(DependencyObject element, PointLatLng value)
         {

@@ -22,6 +22,9 @@ namespace MyGraph
         public static T BindModel<T>(this T element, object model) 
             where T : FrameworkElement
         {
+            // Bind.SetModel does set DataContext but it does not do it immediately
+            // many data binding errors have time to occur
+            element.DataContext = model;
             Bind.SetModel(element, model);
             return element;
         }
