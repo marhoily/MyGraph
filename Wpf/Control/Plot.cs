@@ -24,16 +24,16 @@ namespace MyGraph
         public static readonly DependencyProperty ViewPortProperty = DependencyProperty.Register(
             "ViewPort", typeof(IViewPort), typeof(Plot), new PropertyMetadata(default(IViewPort), ViewPortPropertyChangedCallback));
 
-        private static void ViewPortPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private static void ViewPortPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             var plot = (Plot)dependencyObject;
-            var oldValue = (IViewPort)dependencyPropertyChangedEventArgs.OldValue;
+            var oldValue = (IViewPort)e.OldValue;
             if (oldValue != null)
             {
                 oldValue.Changed -= plot.InvalidateArrange;
                 oldValue.Changed -= plot.UpdateLinePositions;
             }
-            var newValue = (IViewPort)dependencyPropertyChangedEventArgs.NewValue;
+            var newValue = (IViewPort)e.NewValue;
             if (newValue != null)
             {
                 newValue.Changed += plot.InvalidateArrange;
