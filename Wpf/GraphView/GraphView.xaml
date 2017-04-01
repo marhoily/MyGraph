@@ -70,12 +70,5 @@
                       X2="{Binding Mouse.X}" Y2="{Binding Mouse.Y}" />
             </DataTemplate>
         </local:GraphControl.FreeEdgeTemplate>
-        <local:GraphControl.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Add Vertex"
-                          cal:Action.TargetWithoutContext="{Binding Graph}"
-                          cal:Message.Attach="AddVertex" />
-            </ContextMenu>
-        </local:GraphControl.ContextMenu>
     </local:GraphControl>
 </UserControl>

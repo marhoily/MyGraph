@@ -28,13 +28,13 @@ namespace MyGraph
             this.WhenLoaded(() => this.Track(ctrl => ctrl.Graph.NewEdgeSource)
                 .SubscribeAndApply((o, n) => OnNewEdgeSourceChanged())
                 .Dispose);
-
-            PreviewMouseDown += (s, e) =>
-                Graph?.SetLastClickLocation(ViewPort.FromLocalToLatLng(e.GetPosition(this)));
-
+          
             this.Track(x => x.ViewPort).SubscribeAndApply((o, n) => _plot.ViewPort = n);
-        }
 
+            Loaded += (s, e) => this.Parent<Window>().PreviewMouseDown += (s1, e1)
+                => Graph?.SetLastClickLocation(ViewPort.FromLocalToLatLng(e1.GetPosition(this)));
+        }
+        
         private void OnNewEdgeSourceChanged()
         {
             if (Graph?.NewEdgeSource == null) return;

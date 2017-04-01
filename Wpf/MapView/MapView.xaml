@@ -12,13 +12,13 @@
     <Grid>
         <windowsPresentation:GMapControl x:Name="_gMapControl"/>
         <myGraph:GraphView x:Name="_graphView"/>
-        <!--<Grid.ContextMenu>
+        <Grid.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Add Vertex"
                           cal:Action.TargetWithoutContext="{Binding Graph}"
                           cal:Message.Attach="AddVertex" />
             </ContextMenu>
-        </Grid.ContextMenu>-->
+        </Grid.ContextMenu>
 
     </Grid>
 </UserControl>
