@@ -13,12 +13,14 @@
     <x:Code>
         <![CDATA[ public GraphView() { InitializeComponent(); } ]]>
     </x:Code>
-    <local:GraphControl Graph="{Binding Graph}" x:Name="_control" x:FieldModifier="public">
+    <local:GraphControl Graph="{Binding Graph}" 
+                        x:Name="_control" x:FieldModifier="public">
         <local:GraphControl.VertexTemplate>
             <DataTemplate DataType="local:IVertex">
                 <Ellipse Width="10" Height="10"
                          Fill="Gold" StrokeThickness="1" Stroke="SaddleBrown"
                          local:Plot.Location="{Binding Location}"
+                         Panel.ZIndex="1"
                          Tag="{Binding Graph, RelativeSource={RelativeSource AncestorType={x:Type local:GraphControl}}}">
                     <Ellipse.ContextMenu>
                         <ContextMenu>

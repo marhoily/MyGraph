@@ -1,4 +1,5 @@
-﻿using GMap.NET;
+﻿using System.Windows.Input;
+using GMap.NET;
 using GMap.NET.MapProviders;
 
 namespace MyGraph
@@ -14,6 +15,7 @@ namespace MyGraph
             _gMapControl.MaxZoom = 20;
             _gMapControl.Zoom = 7;
             _graphView._control.ViewPort = new ViewPort(_gMapControl);
+            _gMapControl.DragButton = MouseButton.Left;
         }
 
     }

@@ -15,14 +15,14 @@ namespace MyGraph
                     .Cast<FrameworkElement>()
                     .BindModel(vertex)
                     .SubscribeForDragging(this))
-                .SynchronizeTo(_vertices.Children)
+                .SynchronizeTo(_plot.Children)
                 .DisposeWithSource);
 
             this.WhenLoaded(() => this.TrackSet(ctrl => ctrl.Graph.Edges)
                 .Select(edge => EdgeTemplate.LoadContent()
                     .Cast<FrameworkElement>()
                     .BindModel(edge))
-                .SynchronizeTo(_edges.Children)
+                .SynchronizeTo(_plot.Children)
                 .DisposeWithSource);
 
             this.WhenLoaded(() => this.Track(ctrl => ctrl.Graph.NewEdgeSource)
@@ -32,11 +32,7 @@ namespace MyGraph
             PreviewMouseDown += (s, e) =>
                 Graph?.SetLastClickLocation(ViewPort.FromLocalToLatLng(e.GetPosition(this)));
 
-            this.Track(x => x.ViewPort).SubscribeAndApply((o, n) =>
-            {
-                _vertices.ViewPort = n;
-                _edges.ViewPort = n;
-            });
+            this.Track(x => x.ViewPort).SubscribeAndApply((o, n) => _plot.ViewPort = n);
         }
 
         private void OnNewEdgeSourceChanged()
@@ -46,12 +42,12 @@ namespace MyGraph
             var freeEdge = FreeEdgeTemplate.LoadContent()
                 .Cast<FrameworkElement>().BindModel(graphFreeEdge);
             MouseMove += graphFreeEdge.OnMouseMove;
-            _edges.Children.Add(freeEdge);
+            _plot.Children.Add(freeEdge);
             MouseButtonEventHandler clean = null;
             clean = (s, e) =>
             {
                 Graph.NewEdgeSource = null;
-                _edges.Children.Remove(freeEdge);
+                _plot.Children.Remove(freeEdge);
                 MouseMove -= graphFreeEdge.OnMouseMove;
                 MouseDown -= clean;
             };
